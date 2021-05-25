@@ -129,7 +129,7 @@ type
     procedure SetButtons;
     function MaxPrintLength(AItem: TItemBase): Double;
     procedure SimDelay;
-    function GetItemColor(FD: TFrameDraw;AFrame: TSteelFrame; p: pEntityRecType): TColor;
+    function GetItemColor(AFrame: TSteelFrame; p: pEntityRecType): TColor;
     function GetRollFormerID : String;
   protected // unused / truss only
     function GetScrewStr(Q: TProductionQueue; AItem: TItemBase): string; //scans Steelmem[] of cutptr^.mndx to returns '<<' + screw count
@@ -945,9 +945,9 @@ begin
     close;
 end;
 
-function TFormScotTruss.GetItemColor(FD: TFrameDraw; AFrame: TSteelFrame; p: pEntityRecType): TColor;
+function TFormScotTruss.GetItemColor(AFrame: TSteelFrame; p: pEntityRecType): TColor;
 begin
-  if p = FD.FocusedEnt then
+  if p = FSelectedItem then
     exit(clRed);
   if (FDisplayFrame <> ProductionQueueQ.CurrentItem.Frame) then
      exit(clWebDodgerBlue); // preview

@@ -7,7 +7,7 @@ uses
 
 type
   TFrameDraw = class;
-  TGetItemColor = function(AObject: TFrameDraw ;AFrame: TSteelFrame; p:pEntityRecType): TColor of object;
+  TGetItemColor = function( AFrame: TSteelFrame; p:pEntityRecType): TColor of object;
 
   TFrameDraw = class(TObject)
   private
@@ -308,7 +308,7 @@ begin
   end;
 
   FCanvas.Pen.Width := baseWidth;
-  FCanvas.Pen.color := FOnGetColour(self, FFrame, p);
+  FCanvas.Pen.color := FOnGetColour(FFrame, p);
 
   with p^ do
   begin

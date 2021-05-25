@@ -29,7 +29,7 @@ type
     FCurrentFrame: Integer; // index
     FSelectedItem: pEntityRecType;
     procedure SetCurrentFrame(const Value: Integer);
-    function GetItemColor(AObject: TFrameDraw; AFrame: TSteelFrame; p: pEntityRecType): TColor;
+    function GetItemColor(AFrame: TSteelFrame; p: pEntityRecType): TColor;
     property CurrentFrame: Integer read FCurrentFrame write SetCurrentFrame;
   public
 //    class function ShowFrames(AFrameSelection: TFrameSelection): boolean;
@@ -69,7 +69,7 @@ begin
   Paintbox1.invalidate;
 end;
 
-function TPreviewForm.GetItemColor(AObject: TFrameDraw ;AFrame: TSteelFrame; p:pEntityRecType): TColor;
+function TPreviewForm.GetItemColor(AFrame: TSteelFrame; p:pEntityRecType): TColor;
 begin
   if p = FSelectedItem then
     exit(clRed);

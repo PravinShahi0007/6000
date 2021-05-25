@@ -144,7 +144,7 @@ type
     procedure AddItem(Item: TBookmark);
     procedure SelectFrame(Sender: TObject);
     procedure SelectAllFrames;
-    function  GetItemColor(FD: TFrameDraw; AFrame: TSteelFrame; p: pEntityRecType): TColor;
+    function  GetItemColor(AFrame: TSteelFrame; p: pEntityRecType): TColor;
     procedure ProcessToDoEdit;
     procedure UpdatePanelFramesProduceOption;
     procedure EP2FILEAfterScroll(DataSet: TDataSet);
@@ -348,7 +348,7 @@ begin
   end;
 end;
 
-function TFormJobSelection.GetItemColor(FD: TFrameDraw; AFrame: TSteelFrame; p: pEntityRecType): TColor;
+function TFormJobSelection.GetItemColor(AFrame: TSteelFrame; p: pEntityRecType): TColor;
 begin
   result:=clWebDodgerBlue;
 end;
