@@ -1,0 +1,42 @@
+:Base BLOWFISH.hlp
+1 Getting Started with TSM DES
+2 Contents=IDH_CONTENTS@des.HLP
+2 Installing=Installing@des.HLP
+2 Overview=Overview@des.HLP
+2 Using TDES=Using@des.HLP
+2 Getting in touch with TSM Inc.=Getting_in_touch_with_TSM_Inc@des.HLP
+2 Other Delphi components by TSM Inc.=Other_Delphi_components_by_TSM_Inc@des.HLP
+2 Licensing and copyright=Licensing_and_copyright@des.HLP
+1 Properties
+2 CipherMode=CipherMode@des.HLP
+2 StringMode=StringMode@des.HLP
+1 Methods
+2 Burn=Burn@des.HLP
+2 CBCMACBlock=CBCMACBlock@des.HLP
+2 CBCMACString=CBCMACString@des.HLP
+2 DecBlock=DecBlock@des.HLP
+2 DecFile=DecFile@des.HLP
+2 DecStream=DecStream@des.HLP
+2 DecString=DecString@des.HLP
+2 EncBlock=EncBlock@des.HLP
+2 EncFile=EncFile@des.HLP
+2 EncStream=EncStream@des.HLP
+2 EncString=EncString@des.HLP
+2 GetVersion=GetVersion@des.HLP
+2 InitialiseByte=InitialiseByte@des.HLP
+2 InitialiseString=InitialiseString@des.HLP
+2 LoadIVByte=LoadIVByte@des.HLP
+2 LoadIVString=LoadIVString@des.HLP
+1 Background Information
+2 The security of TDES=Security@des.HLP
+2 DES Test Vectors=Test_Vectors@des.HLP
+2 Internals and interfacing with TDES=Internals_and_interfacing@des.HLP
+2 Encryption Modes
+3 Modes of operation=Modes_of_operation@des.HLP
+3 ECB (Electronic Code Book)=ECB_Electronic_Code_Book@des.HLP
+3 CBC (Cipher Block Chaining)=CBC_Cipher_Block_Chaining@des.HLP
+3 CFB (Cipher FeedBack)=CFB_Cipher_FeedBack@des.HLP
+3 OFB (Output FeedBack)=OFB_Output_FeedBack@des.HLP
+3 OFB (Output FeedBack)=OFB_Output_FeedBack
+1 Errors/Exceptions
+2 Errors / Exceptions=Errors_/_Exceptions@des.HLP

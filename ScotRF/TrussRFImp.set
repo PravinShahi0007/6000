@@ -1,0 +1,77 @@
+[general]
+sim=1
+units=Imperial
+inches=0
+magnif=7
+defaultdir=
+ratio=1.54783950617284
+itemno=1
+drive=Mint II
+warning=0
+comport=COM2
+com2port=COM2
+scale=130
+pause=0
+rectangles=1
+chordweb=1
+bom=1
+sizesort=0
+namesort=0
+baudrate=57600
+production=1
+[rf]
+c2fhole=11 23/32
+cope2fhole=8 3/4
+n2fhole=5 13/32
+lhole2fhole=2 9/16
+notchsize=15/16
+copesize=15/16
+cutwidth=3/16
+oppause=0
+orient=0
+lipholeheight=1 5/16
+flangeholeheight=9/16
+precamber=0
+gauge=24
+profile=1 15/16
+power=1
+current=7.5
+autopc=0
+[connections]
+buttgap=3/16
+holedist=12/16
+tolerance=2/16
+minimize=0
+specialcons=1
+radius=10
+minimizeBC=0
+web2web=0
+screws=1
+fontsize=10
+prtradius=25
+displayfontsize=14
+[printer]
+inkjet=0
+frmcode=0
+idescr=0
+chrlen=0
+headpos=0
+job=
+margin=5
+truss=0
+bearingsize=15
+braces=0
+[counter]
+GCW=0
+CCW=0
+NCW=0
+LPCW=0
+FPCW=0
+[profile]
+lipholeheight=1 5/16
+flangeholeheight=9/16
+gauge=20
+profileheight=2 1/16
+lipsize=5/16
+[production]
+file=

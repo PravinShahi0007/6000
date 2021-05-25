@@ -1,0 +1,263 @@
+
+
+  1.00 Aug 03
+  1.01 Oct 03 Added processing for new ops
+  1.02 Nov 03 Changed reference to Lip hole
+  1.03 Jan 04 Added hi-precision move option
+  Txf format inclides CT & INSERT holes
+  1.04 May    CT & INSERT holes & imperial fixes
+  1.05        Removed items
+  1.06        Added display steel rectangles option
+  1.07        Added Alt+cursor key to translate truss display
+  1.08        Imperial length entry
+  1.09        Length optimization for notched-over ends
+  1.10        Removed inches only option, hid items in 'alt' + 'click manual'
+  1.11        Saved minimize setting, few screen mods
+  1.12        Modified imperial wizard
+  1.13 Jun    Added Chord-Web sort option
+  1.14        Fixed cope/notch tolerance & removed duplicates
+  1.15 Jul    Fixed limit on temparray size (item op position limit)
+  1.16 Aug    Added extra cope code for carried truss joints
+  1.20        New Trusscard keys
+  1.21        Added special connection circles
+  1.22        Dynamic array for member screen details
+  Added min dist setting to txf file format
+  Added lipsize settings, new profile tab & updated adjust for joints unit
+  Fixed smartcard issue
+  1.23        Added hole position checking in ProcessTruss code
+  1.24        Translated extra copes to new origin, as for other truss coords.
+  1.25        Fix for cathedral truss BCs, added BC shortening setting
+  1.26        Extended temparray to 13 chrs to fit over 10000 distances
+  1.27        Latest AdjustforJoints, changed minimize notched to mitred ends text
+  1.28        Web-web 2pt connection setting, drive I bar
+  1.29        Updated AdjustforJoints to improve inside joint gap
+  1.30        TXT file option 1st in dialog, bolder display lines
+  1.32        Operator and motor load progress bars
+  1.33        Improved special op displays - con1, scr
+  1.34 Feb 05 AdjustforJoints - removed small piece of cope
+  1.35        Activated pre-camber factor
+  1.36        Counter value update, variable pre-camber on no. webs & their size
+  1.37        Went back to std pre-camber, and modified comm array data to remove decimal pts
+  1.38        Removed duplicate inkjet window in system options
+  1.39        Removed production button - left code for the time being
+  1.40 Jun 05 Added setting for Max motor current for power-meter scale.
+  1.41 Jul    Bill of Materials from Ops in txt xtnn files
+  1.42        Gauge selection in drop down list box
+  1.43 Aug    Simulation truss printing
+  1.44        Fixed setting file name save
+  1.45        Disabled truss prt & bom if truss connection error
+  1.46        Added Bruce's error reporting if rivets < 0 and less tolerance for items meeting.
+  1.47        Activated sim.cut for pwd access
+  1.48        Removed code for comms array decimal pt issue. Must have Firmware build 5225
+  1.49        Added prtr circle radius
+  1.50 Jan 01 Removed translate to origin code - to overcome connection issue
+  1.51 2006   Added Chord length to Truss prt; Moved prt option to separate tab
+  1.52        Centred screw text on font for printing & screen
+  1.53        Added item detail font size & screw count data
+  1.54        Added Sort by Truss Size option
+  1.55 Feb 06 Added user settings/general options for sorts by name & sort by size
+  1.56     08 Chnaged ScanTruss to report length based on BC, height TC to BC overall
+  1.57     13 New AdjustForJoints Unit, renamed Entity[] to TrussEntity[]
+  1.58        New Adjustforjoints & Global units
+  1.59     17 Added Application update in system buttons
+  1.60     27 Added ReadCommsarray with dpoint option fdor Build > 5225
+  1.61     28 Using version infor in project & update form
+  1.62  Mar 1 Baudrate setting for Mint drives.
+  1.63      2 Increased truss size selection name to 12 chrs
+  1.64      5 Added SCB screw type for dble sided screws
+  1.65        Quantity added to truss print. All printer fonts now editable.
+  1.66        Minor readcommsarray change for 3 phase comms noise
+  1.67        Allowed for upper / lowercase op definitions in txt files.
+  1.68        Fixed power meter
+  1.69  Apr22 Added MintII active X comms option
+  1.70        Added firmware & mex downloads
+  1.71        Minor changes to formshow comms open
+  1.72        Added Bearing type position to display and hardcopy - no size option
+  1.74  May22 Added Brace type for display next to braced web
+  1.75     29 Added Auto mPreCamber of BC member from TPlus txt data
+  1.76  Jun 6 Mint status to show nnn.m for software version, and user MaxI setting > 630 mnt
+  BkUp var in mint drive for EncPCm for poweroffs and pre-camber stops
+  1.77  Aug 1 Adjusted text position for bearings, screws etc..
+  1.78  Sep 1 Added wait for Read comms array checksum for non-Baldor comms
+  1.79     25 Mod for RS485 handshaking using Baldor comms active X
+  1.80     29 MessForm position update
+  1.81  Oct 3 Uses Mint 5523 Controls, improved error reporting for processtruss
+  1.82  Nov11 Added temp compensation option
+  1.83     17 New adjustforjoints unit for concave TC joints
+  1.84  Nov23 Added production file as per panel
+  1.85  Dec17 Added Job ID to coil change form.
+  1.86  Feb07 Mod for notched joints and joint gaps
+  1.87  Mar   Bearing size print option, new bearing text positions
+  1.88        Added option to prt braces on hardcopy
+  1.89        Changed BOM screw & spacer count for dbl sided screws & spacers with 2B screws
+  1.90  Apr   Added truss height (BC min to TC max) to printout
+  2.00  Apr   Combined ScotTruss & ScotPanel
+  2.01        Updated with Job details print & rmoved calibrate pre-camber message like ScotTruss
+  2007
+  1.0.0.3 Jun Added Flex+ support
+  1.0.0.6     Removed 150 mm offset
+  1.0.0.7     More Flex+ comms support
+  1.0.0.17Jul Added production file records for pre-camber adjustments
+  .0.0.20Aug New Key generation for s/cards version 4
+  1.0.0.22    Added s/card erasure when zeroed
+  1.0.0.26    Added remove frame from selected list when run option, like scotpanel
+  1.0.0.50    Removed unecessary panel settings
+  1.0.0.51    Added s/card maths encryption
+  1.0.0.58    New AdjustForJoints unit
+  1.0.0.59     "
+  1.0.0.60    New blowfish key for epf files, special
+  1.0.0.61    Minor mod to test for temps sensor
+  1.0.0.63    Nov more truss prt options
+  1.0.0.70    Chgd truss.ini -> ScotRF.ini
+  1.0.1.00    New blowfish encryption (not country sensitive) for latest ScotSteel
+  1.0.4.1     Minor changes to default settings folders
+  Compatible with ComDll 1.20.7.171, AdjustforJoints 12.2.2008
+  1.0.4.2     Removed unused units - PrtUnit, select
+  Changed cypher string 1178, Added comments
+  1.0.4.5     Removed unit5
+  1.0.4.6     Increased chord array size to 15 elements
+  1.0.4.9     New comments & option to include tool ops in production file
+  1.0.5.1     Added life counter read as button in mintstatus.
+  1.0.5.2     Mod to ReadCommsArray - added result test to MintII lib read
+  1.0.5.4     Added pause request detail option & more comments
+  1.0.5.7     New adjustForJoints from ScotSim 217
+  1.0.5.8     Removed Unit declaration of cutwidth, now only in GlobalU
+  1.0.6.0     Modified SetJointvalues to match ScotSim
+  1.0.6.1     Modified large item display to include item no
+  1.0.6.4     New AdjustForJoints unit - ScotSim 220 version
+  1.0.6.5     New AdjustForJoints unit - ScotSim 226 version
+  1.0.6.7     New AdjustForJoints unit - ScotSim 229 version
+  1.0.7.0     Modifed Process wizard to convert panel ops to internal generic ops
+  New Option in select dialog filter to separate panel & truss process txt files
+  1.0.7.1     Used format to display RF tool settings to 2dp
+  1.0.8.0     Improved structure reading to avoid operation codes conflicting with frame/truss codes
+  1.0.8.3     Increased Array size to 50 web members
+  1.0.9.0 Aug 08 New AdjustForJoints from ScotSim 233
+  1.0.9.2     Modified printing of bearings
+  1.0.9.3     New AdjustForJoints unit from ScotSim 234
+  1.0.9.4     Ditto                         ScotSim 236
+  1.0.9.5     Ditto                         ScotSim 246
+  1.0.9.6     Added Include selectable items feature, as per ScotPanel.
+  Needs Steel Designer 1787+ to id openings with *, ie SL*, SR*
+  1.0.9.8     New AdjustForJoints from ScotSim 249
+  1.0.10.0    Modifed Panel & truss Wizard for integers only
+  1.0.13.1    Removed Cut/Notch Pause as replaced by Op pause which is only for cut & notch
+  1.0.14.0    Set default settings tab back to general
+  1.0.16.0    Added Nucon splash screen option for panels
+  1.0.17.5    Modified & new code for inkjet printers, DoD2002 and SX-32
+  1.0.17.7    Modified DoD2002 code, added Include Web/Chord for truss production
+  1.0.18.2    Added new Adjustforjoints unit for HoleAuto Feb09, added swages to simcut file
+  1.0.18.3    Added new AdjustforJoints & GlobalU Feb26 2009. Fixes 3" truss joint issue
+  1.0.18.4    Modified hole height truss code for imperial entries
+  1.0.18.5    New Adjustforjoints unit in ScotSim 258
+  1.0.19.0    Inkjet printer mods
+  1.0.19.1    New AdjustForJoijnts unit in ScotSim  259
+  1.0.19.2    Modified Sort order for trusses logic
+  1.0.19.3    Changed pwd position to general Tab
+  1.0.20.4    Modified code for series 800 RFs, AdjustForJoints from ScotSim 261, new pwds for A & B
+  1.0.20.5    Bruce modified for New AdjustForJoijnts unit
+  also where rems show 1.0.20.5
+  1.0.20.6    AdjustForJoints joining version 265
+  1.0.20.7  Sep 09 Increased size of PosNotch & PosCope arrays
+  1.0.20.8    New pwds for setup
+  1.0.20.9    Increased PosSwage array size
+  1.0.21.1    Changed line 91 of VersionU, to report full version no.
+  1.0.21.2    AdjustForJoints joining version 271 (ScotSim 271)
+  1.0.21.3    AdjustForJoints joining version 271 (ScotSim 273) minor chgs for acute angles
+  1.0.21.4    AdjustForJoints from ScotSim 276, notching changes for acute angled trusses
+  1.0.21.5    AdjustForJoints from ScotSim 277
+  1.0.21.7    AdjustForjoints from Scotsim 287
+  1.0.21.8    AdjustForjoints from ScotSim 289
+  1.0.21.9    AdjustForjoints from ScotSim 290
+  1.0.22.1    Uses latest ActiveX Baldor lib 5626
+  1.2.0.8     Optional Smartcard version 4 or 5
+              No inkjet printed for small sx32 items with Logo on
+  2.0.0.15    Updated splash screens.
+  2.0.0.16    Modified update version code to compare Major,Minor & Build nos.
+  1.2.1.8     Set back to ver 1 for time being. New AdjustForJoints, increased PosServ arrays 20 -> 50
+              Increased max ops 100 -> 500
+  1.2.1.16    Cardtotal is now encrypted on the card, to avoid total becoming available
+  2.0.0.2     ReBuild for s/card v 5v2, new cipher for ep2 project files
+  2.0.0.10    Speed button instead of tcolor buttons, with icons and button hints
+  2.0.0.20    New Logos, label printing
+  2.0.0.21    New settings about tab
+  2.0.0.22    Moves splash label between USA Panel & Scottsdale software
+  2.0.0.23    Modified process wizards to 2 dp,
+  2.0.0.24    Changed to a new SetPrinter function
+  2.0.0.25    Latest AdjustForjointsU added Aug 5 2011
+  2.0.0.26    New code for 2nd hole - multihole
+  2.0.0.27    Punch or LipPunch is comid = '8', FlangePunch is comid = '17''
+  2.0.0.29    Added more chords for truss hardcopy details. New multi hole code, but reset back to comid=8 for now
+  2.0.0.30    Latest adjustforjoints 038. (US peak swage option)
+  2.0.0.31    Latest adjustforjoints 039. Misc settings has USA Joint option
+  2.0.0.32    Latest adjustforjoints 039 with swage finder added for panels
+  2.0.0.33    Latest adjustforjoints in ScotSim 376
+  2.0.0.34    Renamed ScotRF version to Sim, removed BL1600 system button
+  2.0.0.35    Truss DBL Notch option - to test Feb 2012
+  2.0.0.36    Item Panel wizard added 'D' for dbl rivets - same comid as service2
+              Only a temp change for special test and possible retro fit.
+  2.0.0.40    Added dbl rivet code to fire service2 ie - flange punch for panel is dbl rivet hole
+  2.0.0.50    Changes to make dbl rivet invisible for release version
+  2.0.0.52    Added extra sx-32 inkjet config cmd for no keyboard
+  2.0.0.53    Added new sx-32 inkjet button in settings, to select ink or cleaner.
+  2.0.0.54    AdjustForJoints 382
+  2.0.1.00    Added dbl rivets for panel
+  2.0.1.06    New adjust for joints 391, minor bug fixes
+              Minor change to offcut C op which apparently fixes dbl rivet issue ...
+  2.0.1.7     Added bNonRF entity check for adding to queue - ie don't add non RF items
+  2.0.1.9     Added extra Sconfig line for sx-32 inkjet printer, new update wesite address
+  2.0.1.12    Production order of PT & PB ?
+  2.0.1.14    Added new AdjustForJoints & GlobalU from ScotSim 404
+  2.0.1.15    Modifed for ScotRF-Truss exe
+  2.0.1.16    Add box section web production option as discrete RF - Single truss queue version
+  2.1.0.13    Modifcations to allow dual RF operation for box truss RF Aug 2013 - 2 queues = Queue & WebQueue
+  2.1.0.17    Added code to handle std queue wizard and box web wizard process files
+  2.1.0.20    Mods to process & std truss production logic. Must have a valid selection if subset of items chosen.
+  2.1.0.22    Added some RF specific messages & deselected select item cbox after loading box web & chord arrays
+  2.1.0.24    Fixed display ptrs after new frame found after a web cut
+  2.1.0.26    Re-coded the member display routines.
+  2.1.0.39    More debugging for bow doubles & display graphics
+  2.1.0.40    Modification to item display list & graphics line widths
+  2.1.0.42    Changed the selection process structure to process once, then sort chords & webs into 2 queues.
+  2.1.0.43    Fixed truss size to include new members of boxed webs
+  2.1.0.45    Fixed label printing & BC being made on web machine.
+  2.1.0.46    Modified labels to display current production
+  2.1.0.48    Released to LH
+  2.1.0.49    Allows item grouping for multiple copies of frames - in selection window.
+  2.1.0.52    Fixed sevice hole display & rivet count.
+  2.1.0.53    Updated rivet(bolt) count for grouped multiple item copies
+  2.1.0.54    Added test for open prodfile when paused with Flex+ ?? line 745
+  2.1.0.55    Added tek2, tek4 and tek8 ops from SCS truss files, changed txnn filter to txnnn for SCS truss
+  2.1.0.56    Added 75 & 100 gauge truss profile settings for SCS metric truss gauges.
+  2.1.0.57    Adjusted bearing displays
+  2.1.0.58    Added gauge 01 as non-engineered type
+  2.1.0.59    New AdjustForJoints from ScotSim 424
+  2.1.0.60    New UpdateFormU & dfm to active self downloads. Not right..
+  2.1.62      New 3 number versions for update unit
+  2.1.64      Added check for 'tilde' chr at start of item name meaning its a nonRF item.
+  2.1.65      Re-added large member display orientation
+  2.1.66      Added MicroFlex drive option
+  2.1.67      Changes to comms for IP drives ...
+  2.1.68      Added prod file option of frames or items, tracks frame time
+  2.1.69      Modified production options
+  2.1.70      Added VideoJet inkjet printer option
+  2.1.79      Work on VideoJet comms .... basic comms OK
+  2.1.80      Adding inkjet print for videojet ...
+  2.1.91      VideoJet Font 5 used. Other settings from keypad
+  2.1.95      VideoJet debugging, changed gauge files per GM Oct '14
+  2.1.96      Added InkJet baud rate List box - baud rate must now be set, it does not default for any model
+  2.1.98      Removed debug label messages
+  2.1.99      Re-introduced only single select VideoJet SCS message command
+  2.1.102     New code for errors due to e-stop during moves
+  2.1.103     Minor changes to inkjet printer selection
+  2.1.104     Increased queue size to 150,000 items
+  2.1.105     More changes to queuse size
+  2.1.106     Added SoJet inkjet IP printer test code
+  2.1.108     Increased queue ctrs to longwords & longint, increased queu size to 150000 operations
+  2.1.113     Basic SoJet support but wrong item
+  2.1.114     Improved SoJet support
+  2.1.122     Placed SoJet msg transmit before cutter move to give prtr more time. Updated inkjet settings.
+              Added AdjustForJoints 440
+  2.1.130     AdjustForJoints version 441, SoJet chr width and tidied SoJet code a bit. Completed unit1 procedure & function descriptions
+  2.1.131     Commented out a few vars
+  }

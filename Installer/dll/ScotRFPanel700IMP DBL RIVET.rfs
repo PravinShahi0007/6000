@@ -1,0 +1,155 @@
+[general]
+fontsize=15
+sim=0
+metric=0
+imperial=1
+magnif=7
+defaultdir=
+ratio=1.57123473541384
+itemno=1
+drive=Mint II 5225+
+warning=0
+comport=COM1
+com2port=Com2
+scale=150
+pause=0
+rectangles=1
+chordweb=0
+bom=0
+sizesort=0
+namesort=0
+baudrate=57600
+oppause=0
+radius=3
+removeframes=0
+midas=0
+label=0
+BoxRF=0
+MachineID=SCS-DESIGN-6_77
+[trussrf]
+chordweb=0
+c2fhole=85
+cope2fhole=50
+n2fhole=52
+lhole2fhole=110
+notchsize=50
+copesize=50
+cutwidth=5
+precamber=0
+autopc=0
+dblnotch=0
+[panelrf]
+cut2flat=1' 5 13/32
+hole2flat=10 9/32
+holeM2diffhorz=2 19/32
+holeM2diffvert=7/16
+notch2flat=1' 2 3/8
+service2flat=1' 8 21/32
+service22flat=-7 3/8
+swage2flat=3 13/16
+cutwidth=3/16
+flatsize=1 13/16
+notchsize=1 31/32
+swagesize=2 9/16
+notchtol=3/16
+precamber=0
+mholeheight=1 1/32 
+[trussprofile]
+lipholeheight=22
+flangelipholediff=0
+gauge=22
+profileheight=52
+lipsize=6
+holesize=0
+[panelprofile]
+lipsize=3/16
+holeheight=1 1/32 
+holeMheight=1 1/32 
+holesize=3/16
+profileheight=1 15/32
+[tstructure]
+buttgap=4
+holedist=0
+tolerance=10
+minimize=0
+specialcons=0
+minimizeBC=0
+web2web=0
+screws=0
+displayfontsize=8
+[Pstructure]
+service2=0
+jointgap=3/16
+verticalgap=3/16
+minholedist=9/32
+swage=1
+designorder=0
+showservice=1
+ignoremindistance=0
+virtualmitre=1
+[inkprinter]
+inkjet=0
+frmcode=0
+idescr=0
+chrlen=14
+headpos=145
+job=
+logo=
+logoOn=0
+inkbaudrate=19200
+inkIP=192.168.1.9
+inkserial=201115
+Device=None
+[counter]
+TGCW=0
+TCCW=0
+TNCW=0
+TLPCW=0
+TFPCW=0
+PSCW=10000
+PGCW=10000
+PNCW=10000
+PPCW=10000
+FPPCW=0
+LPPCW=10000
+[printer]
+margin=10
+frame=0
+fontsize=8
+prtradius=5
+bearingsize=10
+braces=0
+labels=0
+service=1
+orientation=0
+multiprt=1
+websize=0
+prtjob=1
+prtfilepath=0
+orientcolour=0
+frameprinter=
+[production]
+file=
+prodcbox=0
+cardupdate=1
+toolops=0
+pausereason=1
+proditems=0
+prodframes=1
+[misc]
+power=1
+current=7.5
+comms=0
+USAjoint=0
+dblrivettool=0
+[job]
+contract=
+model=
+location=
+[label]
+job=
+font=15
+printer=
+[boxrf]
+boxc2hole=0
+boxcutwidth=5

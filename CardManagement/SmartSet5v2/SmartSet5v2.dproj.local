@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<ActiveMobileDevice>
+		<NoProfile iOSSimulator="iPhone5"/>
+	</ActiveMobileDevice>
+	<Transactions>
+    <Transaction>2019/08/10 17:58:16.000.982,C:\Users\steve\OneDrive\Documents\Embarcadero\Studio\Projects\6.3000.3000\CardManagement\SmartSet5v2\Unit1.dfm=C:\Users\steve\OneDrive\Documents\Embarcadero\Studio\Projects\6.3000.3000\CardManagement\SmartSet5v2\UnitSmartSetMain.dfm</Transaction>
+  </Transactions>
+</BorlandProject>

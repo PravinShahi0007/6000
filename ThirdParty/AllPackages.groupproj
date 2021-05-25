@@ -1,0 +1,84 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{1E2FD55C-5677-41D7-B5DC-029B1EA10A08}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="ThirdPartyPackages.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="3des_source\des3.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="LockBox\packages\L208_r120.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="LockBox\packages\L208vd120.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="MintController\Mint5626.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="ThirdPartyPackages">
+        <MSBuild Projects="ThirdPartyPackages.dproj"/>
+    </Target>
+    <Target Name="ThirdPartyPackages:Clean">
+        <MSBuild Projects="ThirdPartyPackages.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ThirdPartyPackages:Make">
+        <MSBuild Projects="ThirdPartyPackages.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="des3">
+        <MSBuild Projects="3des_source\des3.dproj"/>
+    </Target>
+    <Target Name="des3:Clean">
+        <MSBuild Projects="3des_source\des3.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="des3:Make">
+        <MSBuild Projects="3des_source\des3.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="L208_r120">
+        <MSBuild Projects="LockBox\packages\L208_r120.dproj"/>
+    </Target>
+    <Target Name="L208_r120:Clean">
+        <MSBuild Projects="LockBox\packages\L208_r120.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="L208_r120:Make">
+        <MSBuild Projects="LockBox\packages\L208_r120.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="L208vd120">
+        <MSBuild Projects="LockBox\packages\L208vd120.dproj"/>
+    </Target>
+    <Target Name="L208vd120:Clean">
+        <MSBuild Projects="LockBox\packages\L208vd120.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="L208vd120:Make">
+        <MSBuild Projects="LockBox\packages\L208vd120.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Mint5626">
+        <MSBuild Projects="MintController\Mint5626.dproj"/>
+    </Target>
+    <Target Name="Mint5626:Clean">
+        <MSBuild Projects="MintController\Mint5626.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Mint5626:Make">
+        <MSBuild Projects="MintController\Mint5626.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="ThirdPartyPackages;des3;L208_r120;L208vd120;Mint5626"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="ThirdPartyPackages:Clean;des3:Clean;L208_r120:Clean;L208vd120:Clean;Mint5626:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="ThirdPartyPackages:Make;des3:Make;L208_r120:Make;L208vd120:Make;Mint5626:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

@@ -1,0 +1,72 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{E30965F2-7668-4432-8DB0-4017BDDBB304}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="ScotRF.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\ScotServer\ScotServer.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\ScotDashboard\ScotDashBoard.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="C:\Users\steven.wang\Documents\Embarcadero\Studio\Projects\RESTServer\RESTServer.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="ScotRF">
+        <MSBuild Projects="ScotRF.dproj"/>
+    </Target>
+    <Target Name="ScotRF:Clean">
+        <MSBuild Projects="ScotRF.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ScotRF:Make">
+        <MSBuild Projects="ScotRF.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ScotServer">
+        <MSBuild Projects="..\ScotServer\ScotServer.dproj"/>
+    </Target>
+    <Target Name="ScotServer:Clean">
+        <MSBuild Projects="..\ScotServer\ScotServer.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ScotServer:Make">
+        <MSBuild Projects="..\ScotServer\ScotServer.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ScotDashBoard">
+        <MSBuild Projects="..\ScotDashboard\ScotDashBoard.dproj"/>
+    </Target>
+    <Target Name="ScotDashBoard:Clean">
+        <MSBuild Projects="..\ScotDashboard\ScotDashBoard.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ScotDashBoard:Make">
+        <MSBuild Projects="..\ScotDashboard\ScotDashBoard.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="RESTServer">
+        <MSBuild Projects="C:\Users\steven.wang\Documents\Embarcadero\Studio\Projects\RESTServer\RESTServer.dproj"/>
+    </Target>
+    <Target Name="RESTServer:Clean">
+        <MSBuild Projects="C:\Users\steven.wang\Documents\Embarcadero\Studio\Projects\RESTServer\RESTServer.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="RESTServer:Make">
+        <MSBuild Projects="C:\Users\steven.wang\Documents\Embarcadero\Studio\Projects\RESTServer\RESTServer.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="ScotRF;ScotServer;ScotDashBoard;RESTServer"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="ScotRF:Clean;ScotServer:Clean;ScotDashBoard:Clean;RESTServer:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="ScotRF:Make;ScotServer:Make;ScotDashBoard:Make;RESTServer:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

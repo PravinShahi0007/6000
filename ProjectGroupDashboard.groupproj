@@ -1,0 +1,96 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{ECD06444-8A39-466D-88F1-21149DA2CBB1}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="ScotService\ScotService.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ScotRF\ScotRF.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ScotDashboard\ScotDashBoard.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ScotTest\ScotTest.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ScotFDServer\ScotServer.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ScotAdmin\ScotAdmin.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="ScotService">
+        <MSBuild Projects="ScotService\ScotService.dproj"/>
+    </Target>
+    <Target Name="ScotService:Clean">
+        <MSBuild Projects="ScotService\ScotService.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ScotService:Make">
+        <MSBuild Projects="ScotService\ScotService.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ScotRF">
+        <MSBuild Projects="ScotRF\ScotRF.dproj"/>
+    </Target>
+    <Target Name="ScotRF:Clean">
+        <MSBuild Projects="ScotRF\ScotRF.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ScotRF:Make">
+        <MSBuild Projects="ScotRF\ScotRF.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ScotDashBoard">
+        <MSBuild Projects="ScotDashboard\ScotDashBoard.dproj"/>
+    </Target>
+    <Target Name="ScotDashBoard:Clean">
+        <MSBuild Projects="ScotDashboard\ScotDashBoard.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ScotDashBoard:Make">
+        <MSBuild Projects="ScotDashboard\ScotDashBoard.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ScotTest">
+        <MSBuild Projects="ScotTest\ScotTest.dproj"/>
+    </Target>
+    <Target Name="ScotTest:Clean">
+        <MSBuild Projects="ScotTest\ScotTest.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ScotTest:Make">
+        <MSBuild Projects="ScotTest\ScotTest.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ScotServer">
+        <MSBuild Projects="ScotFDServer\ScotServer.dproj"/>
+    </Target>
+    <Target Name="ScotServer:Clean">
+        <MSBuild Projects="ScotFDServer\ScotServer.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ScotServer:Make">
+        <MSBuild Projects="ScotFDServer\ScotServer.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ScotAdmin">
+        <MSBuild Projects="ScotAdmin\ScotAdmin.dproj"/>
+    </Target>
+    <Target Name="ScotAdmin:Clean">
+        <MSBuild Projects="ScotAdmin\ScotAdmin.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ScotAdmin:Make">
+        <MSBuild Projects="ScotAdmin\ScotAdmin.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="ScotService;ScotRF;ScotDashBoard;ScotTest;ScotServer;ScotAdmin"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="ScotService:Clean;ScotRF:Clean;ScotDashBoard:Clean;ScotTest:Clean;ScotServer:Clean;ScotAdmin:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="ScotService:Make;ScotRF:Make;ScotDashBoard:Make;ScotTest:Make;ScotServer:Make;ScotAdmin:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

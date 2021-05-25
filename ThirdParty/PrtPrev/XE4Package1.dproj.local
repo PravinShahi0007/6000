@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2014/12/02 11:30:13.000.451,=rtl.dcp</Transaction>
+    <Transaction>2014/12/02 11:30:45.729,=rtl.dcp</Transaction>
+    <Transaction>2014/12/02 11:31:33.438,=C:\Users\Public\Documents\RAD Studio\7.0\3rdParty\Scottsdale\PrtPrev\frmPrintPreviewU.pas</Transaction>
+    <Transaction>2014/12/02 11:31:33.443,=C:\Users\Public\Documents\RAD Studio\7.0\3rdParty\Scottsdale\PrtPrev\PrtPrev.pas</Transaction>
+    <Transaction>2014/12/02 11:32:02.118,C:\Users\Public\Documents\RAD Studio\7.0\3rdParty\Scottsdale\PrtPrev\XE4Package1.dproj=C:\Users\martin.lindley\Documents\RAD Studio\Projects\Package1.dproj</Transaction>
+  </Transactions>
+</BorlandProject>
