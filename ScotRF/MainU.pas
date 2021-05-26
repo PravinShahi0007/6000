@@ -22,7 +22,8 @@ uses
   Dialogs, Menus, ComCtrls, StdCtrls, ExtCtrls, Buttons, ImgList, Graphics,
   FrameDataU, FramePrintU, ItemTypeSelectionU, TranslateU, jpeg, ScotRFTypes, ActnList,
   strUtils, ijpStatusU, System.Actions, System.ImageList, Math, coil, Vcl.Themes
-  , UnitServiceManager, UnitServiceStatus, UnitDMRollFormer, UnitRemoteDBClass;
+  , UnitServiceManager, UnitServiceStatus, UnitDMRollFormer, UnitRemoteDBClass
+  , CardBaseU;
 
 type
   TMainForm = class(TForm)
@@ -245,7 +246,7 @@ begin
   else if not CardAdapter.hasCredit then
     msg := 'Card is '+ CardAdapter.NoCreditMessage
   else if (Rollformer.Connected=tcConnected) and not CardAdapter.CheckCardChargeType(Rollformer.MachineChargeType) then
-    msg := format('%s card not valid for %s machine', [CardAdapter.ChargeSchemeStr, ChargeSchemeStr(Rollformer.MachineChargeType)]);
+    msg := format('%s card not valid for %s machine', [CardAdapter.ChargeSchemeStr, TCardBase.ChargeSchemeStr(Rollformer.MachineChargeType)]);
 
   CurrentCARDNUMBER := CardAdapter.CardID;
   uxCardID.caption := 'Card ID  ' + CurrentCARDNUMBER; // name + serial number
@@ -533,7 +534,7 @@ begin
   if Rollformer.MachineChargeType=ccGreen then
     uxRollformerID.caption := G_Settings.general_drive
   else
-    uxRollformerID.caption := G_Settings.general_drive + ' ' + ChargeSchemeStr(Rollformer.MachineChargeType);
+    uxRollformerID.caption := G_Settings.general_drive + ' ' + TCardBase.ChargeSchemeStr(Rollformer.MachineChargeType);
 
   InkJetMaster.PrinterType := TInkjetType(G_Settings.inkprinter_Type);
   InkJetMaster.IJPEnabled := Not ((DriveClass = tdcSim) or (DriveClass=tdcVirtual) or (InkJetMaster.PrinterType = IJPNone));

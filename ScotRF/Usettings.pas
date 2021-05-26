@@ -408,7 +408,7 @@ function DriveHasTemp  : boolean;
 implementation
 
 uses UnitScotTruss, units,  logging, CardAPIU, cardAdapterU, RollformerU, IJPSojetU, ijpMasterU,
-  UnitDMRollFormer;
+  UnitDMRollFormer, CardBaseU;
 {$R *.dfm}
 
 
@@ -1712,7 +1712,7 @@ begin
 
   if (rollformer.MachineChargeType<>ccGreen) or (CardAdapter.ChargeScheme<>ccGreen) then
   begin
-    uxVersionInfo.Lines.add('Machine: ' + ChargeSchemeStr(rollformer.MachineChargeType));
+    uxVersionInfo.Lines.add('Machine: ' + TCardBase.ChargeSchemeStr(rollformer.MachineChargeType));
     uxVersionInfo.Lines.add('Card: ' + CardAdapter.ChargeSchemeStr);
     if rollformer.
     MachineChargeType=ccNoCharge then

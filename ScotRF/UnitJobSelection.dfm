@@ -896,11 +896,10 @@ object FormJobSelection: TFormJobSelection
         object Label1: TLabel
           Left = 1
           Top = 1
-          Width = 71
+          Width = 70
           Height = 13
           Align = alTop
           Caption = 'Qty Remaining'
-          ExplicitWidth = 70
         end
         object bnSelect: TBitBtn
           Left = 14

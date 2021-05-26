@@ -21,10 +21,9 @@ object FormatDetail: TFormatDetail
     Top = 135
     Width = 75
     Height = 25
-    DoubleBuffered = True
     Enabled = False
     Kind = bkOK
-    ParentDoubleBuffered = False
+    NumGlyphs = 2
     TabOrder = 0
   end
   object rgPanelOrTruss: TRadioGroup

@@ -8,7 +8,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs, PasswordU,
-  StdCtrls, Buttons, ComCtrls, ExtCtrls, ScotRFTypes, GlobalU, math, Menus, rollformerU;
+  StdCtrls, Buttons, ComCtrls, ExtCtrls, ScotRFTypes, GlobalU, math, Menus, rollformerU,
+  CardBaseU;
 
 type
   Tmintform = class(TForm)
@@ -85,11 +86,11 @@ end;
 
 procedure Tmintform.bnSaveChargeClick(Sender: TObject);
 var
- CC: TChargeType;
+  CC: TChargeType;
 begin
   if Rollformer.NewProtocol then
   begin
-    CC:=ccGreen;
+    CC := ccGreen;
     case cbCharge.ItemIndex  of
       1: CC:=ccRed;
       2: CC:=ccNoCharge;

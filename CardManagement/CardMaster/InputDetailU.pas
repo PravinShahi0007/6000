@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, Buttons, ComCtrls;
+  Dialogs, StdCtrls, ExtCtrls, Buttons, ComCtrls, System.UITypes, CardBaseU;
 
 type
   TInputDetail = class(TForm)
@@ -19,19 +19,25 @@ type
     Label2: TLabel;
     uxExpiry: TDateTimePicker;
     lbExpiry: TLabel;
+    rgCardCharge: TRadioGroup;
     procedure rgUnitsClick(Sender: TObject);
     procedure bnOKClick(Sender: TObject);
     procedure edNameChange(Sender: TObject);
     procedure edQuantityChange(Sender: TObject);
     procedure edSerialChange(Sender: TObject);
     procedure uxExpiryChange(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure rgCardChargeClick(Sender: TObject);
   private
     function MaxN: integer;
     function CheckN: integer;
     procedure EnableOKButton;
+    procedure UpdateVisibility;
   public
     function getMetres: integer;
     function SerialNumber: Integer;
+    function ChargeScheme: TChargeType;
+    procedure setChargeScheme(AValue: TChargeType);
   end;
 
 implementation
@@ -80,6 +86,17 @@ begin
     bnOK.Enabled := (SerialNumber>0) and (length(edName.Text) >= 4) and (getMetres >= 1);
 end;
 
+procedure TInputDetail.FormCreate(Sender: TObject);
+var
+  defDate: tDateTime;
+  dd,mm,yy: word;
+begin
+  decodedate(Now,yy,mm,dd) ;
+  inc(yy,3);
+  defDate := EncodeDate(yy,4,4); // 4th April
+  uxExpiry.DateTime  := defDate;
+end;
+
 procedure TInputDetail.edQuantityChange(Sender: TObject);
 begin
   EnableOKButton;
@@ -126,5 +143,39 @@ procedure TInputDetail.uxExpiryChange(Sender: TObject);
 begin
   EnableOKButton ;
 end;
+
+function TInputDetail.ChargeScheme: TChargeType;
+const
+  ChargeSchemeArray: array[0 .. 2] of TChargeType =(ccGreen, ccRed, ccNoCharge);
+begin
+  if rgCardCharge.ItemIndex <0 then
+    raise exception.Create('no type selected');
+  result := ChargeSchemeArray[rgCardCharge.ItemIndex];
+end;
+
+procedure TInputDetail.setChargeScheme(AValue: TChargeType);
+begin
+  rgCardCharge.ItemIndex :=0;
+  case AValue of
+    ccRed :        rgCardCharge.ItemIndex:=1;
+    ccNoCharge :   rgCardCharge.ItemIndex:=2;
+  end;
+  UpdateVisibility;
+
+end;
+
+procedure TInputDetail.UpdateVisibility;
+begin
+  uxExpiry.Visible   := ChargeScheme=ccNoCharge;
+  lbExpiry.Visible   := ChargeScheme=ccNoCharge;
+  edQuantity.Enabled := ChargeScheme <> ccNoCharge;
+end;
+
+procedure TInputDetail.rgCardChargeClick(Sender: TObject);
+begin
+ UpdateVisibility;
+end;
+
+
 
 end.

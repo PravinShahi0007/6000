@@ -5,7 +5,7 @@ interface
 uses
   SysUtils, Controls, Classes, forms, scotRFTypes, generics.Collections, IniFiles,
   strUtils, dialogs, VaClasses, VaComm, ExtCtrls, WinUtils, ManufactureU, VirtualMachineU,
-  Mint, MintControls5626Lib_TLB, cardAPIU, CardAdapterU, FrameDataU, versionU;
+  Mint, MintControls5626Lib_TLB, cardAPIU, CardAdapterU, FrameDataU, versionU, CardBaseU;
 
 type
   TCounter = class(TObject)

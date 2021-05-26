@@ -2508,6 +2508,9 @@ object FormScotTruss: TFormScotTruss
       ExplicitWidth = 194
       ExplicitHeight = 88
       inherited Panel1: TPanel
+        inherited Label1: TLabel
+          Width = 47
+        end
         inherited uxCaption: TLabel
           Width = 153
           ExplicitWidth = 153

@@ -3,22 +3,22 @@ object Main: TMain
   Top = 0
   BorderIcons = [biSystemMenu]
   Caption = 'CardMaster'
-  ClientHeight = 266
-  ClientWidth = 486
-  Color = clBtnFace
+  ClientHeight = 284
+  ClientWidth = 504
+  Color = clCream
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -11
+  Font.Height = -13
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
   PopupMenu = PopupMenu1
   OnActivate = FormActivate
   DesignSize = (
-    486
-    266)
+    504
+    284)
   PixelsPerInch = 96
-  TextHeight = 13
+  TextHeight = 16
   object lbErrorStatus: TLabel
     Left = 208
     Top = 27
@@ -42,11 +42,28 @@ object Main: TMain
     AutoSize = False
     Caption = 'No Card'
   end
+  object bnAdd: TSpeedButton
+    Left = 428
+    Top = 243
+    Width = 45
+    Height = 22
+    Anchors = [akRight, akBottom]
+    Caption = '+'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+    Visible = False
+    OnClick = bnAddClick
+  end
   object Memo1: TMemo
     Left = 208
     Top = 54
-    Width = 270
-    Height = 172
+    Width = 288
+    Height = 190
+    TabStop = False
     Anchors = [akLeft, akTop, akRight, akBottom]
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -55,42 +72,33 @@ object Main: TMain
     Font.Style = []
     ParentFont = False
     ReadOnly = True
-    TabOrder = 0
+    ScrollBars = ssVertical
+    TabOrder = 4
     Visible = False
   end
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 247
-    Width = 486
+    Top = 265
+    Width = 504
     Height = 19
     Panels = <>
     SimplePanel = True
   end
-  object bnFormatCard: TBitBtn
-    Left = 48
-    Top = 23
-    Width = 105
-    Height = 36
-    Caption = 'Format Card'
-    Layout = blGlyphRight
-    Spacing = 18
-    TabOrder = 2
-    OnClick = bnFormatCardClick
-  end
   object bnLoadCard: TBitBtn
-    Left = 48
-    Top = 90
+    Left = 36
+    Top = 151
     Width = 105
     Height = 36
-    Caption = 'Load Metres'
+    Caption = 'Setup'
+    Enabled = False
     Layout = blGlyphRight
     Spacing = 18
-    TabOrder = 3
+    TabOrder = 1
     OnClick = bnLoadCardClick
   end
   object bnClose: TBitBtn
-    Left = 48
-    Top = 160
+    Left = 36
+    Top = 209
     Width = 105
     Height = 36
     Caption = '&Close'
@@ -154,13 +162,48 @@ object Main: TMain
     Layout = blGlyphRight
     ModalResult = 11
     Spacing = 18
-    TabOrder = 4
+    TabOrder = 2
     OnClick = bnCloseClick
+  end
+  object GroupBox1: TGroupBox
+    Left = 33
+    Top = 23
+    Width = 136
+    Height = 122
+    Caption = 'Format'
+    Color = clWhite
+    ParentBackground = False
+    ParentColor = False
+    TabOrder = 0
+    object bnFormatPanelCard: TBitBtn
+      Left = 3
+      Top = 23
+      Width = 105
+      Height = 36
+      Caption = 'Format Panel'
+      Enabled = False
+      Layout = blGlyphRight
+      Spacing = 18
+      TabOrder = 0
+      OnClick = bnFormatPanelCardClick
+    end
+    object bnFormatTrussCard: TBitBtn
+      Left = 3
+      Top = 72
+      Width = 105
+      Height = 36
+      Caption = 'Format Truss'
+      Enabled = False
+      Layout = blGlyphRight
+      Spacing = 18
+      TabOrder = 1
+      OnClick = bnFormatTrussCardClick
+    end
   end
   object PopupMenu1: TPopupMenu
     OnPopup = PopupMenu1Popup
-    Left = 88
-    Top = 216
+    Left = 408
+    Top = 72
     object OldFormatCards1: TMenuItem
       Caption = 'Old Format Cards'
       Default = True
@@ -172,6 +215,10 @@ object Main: TMain
     object miOldPanel: TMenuItem
       Caption = 'Panel'
       OnClick = miOldPanelClick
+    end
+    object miEnableFormat: TMenuItem
+      Caption = 'Enable Format'
+      OnClick = miEnableFormatClick
     end
   end
 end

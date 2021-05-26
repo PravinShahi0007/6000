@@ -1,53 +1,15 @@
-unit CardNewU;
-(***************************************************************
-  "new" card (Gemplus GemClub 1K)
-***************************************************************)
+unit CardGemMemoU;
+
+(*********************************************************
+  GemClubMemo card replaces original (Gemplus GemClub 1K)
+*********************************************************)
 
 interface
 
 uses
-  Windows, SysUtils, strUtils, Classes, ExtCtrls, WinScard, CardAPIU, Des, lbProc, lbCipher;
+  Windows, SysUtils, strUtils, Classes, ExtCtrls, WinScard, CardAPIU, Des, lbProc, lbCipher, CardBaseU;
 {$RANGECHECKs OFF}   // confusion in WinSCard between longint/cardinal/uint32 for results
 type
-  ECardIO = class(Exception)
-    Constructor Create(Sw1, Sw2: byte); reintroduce; overload;
-    Constructor Create(Res: integer); reintroduce; overload;
-  end;
-
-  ECardTamper = class(Exception)
-    Constructor Create(s: string); reintroduce;
-  end;
-
-  TCardResponse = record
-    RawData: array[0 .. 127] of byte;
-    Length: DWord;
-    procedure Clear;
-    function Sw1: byte;
-    function Sw2: byte;
-    procedure getData(var Res: TBytes);
-    function Data: TBytes;
-    function AsWord: LongWord;
-  end;
-
-type
-  tCardBase = class
-  private
-    FResponse: TCardResponse;
-    function ReadString(Address: byte; ByteCount: integer): ansiString;
-    procedure WriteBytes(Address: byte; ABytePtr: pByte; nBytes: integer = 4);
-  protected
-    Procedure SendCommand(Cla, Ins: byte; p1, p2: byte; Le: byte; pData: pByte =nil);
-    procedure WriteWord(Address: byte; Value: LongWord);
-    procedure WriteString(Address: byte; Value: ansiString; nBytes: integer);
-    function ReadWord(Address: byte): LongWord;
-  public
-    constructor Create;
-    destructor Destroy; override;
-    procedure FormatCard(Ident: ansiString; AChargeScheme: TChargeType); virtual;
-    procedure LoadMetres(ASerialNumber: integer; IssuedTO: ansiString; Metres: integer;  AIssueDate,AExpiryDate: TDateTime); virtual;
-    function ChargeScheme: TChargeType; virtual;  // [ccGreen, ccRed, ccNoCharge]
-  end;
-
   TCardClubMemo = class(tCardBase)
   private const
     MAP_MFG = $00;
@@ -81,132 +43,52 @@ type
     key_csc1: DWord = $6541C233;
   private
     FIssuerByte: byte;
-    FChargeScheme: TChargeType;
-    function getIssueDate: TDateTime;
-    function getMetres: integer;
-    procedure setMetres(AValue: integer);
     function key_key: DWord; inline;
     procedure ValidateMetres(AValue: integer);
     function EKey: TKey128; inline;
     procedure VerifyCSC(CSCID: byte; AValue: DWord);
-    function  getExpiryDate: TDateTime;
  {$ifdef CARDMASTER}
   private
     // avoid generating code for these methods except for in-house uses
   const
     key_csc0: DWord = $A4742928;
     key_csc2: DWord = $86C5F539;
+  protected
     function isKnownSignature: boolean;
     procedure setIssueDate(ADate: TDateTime);
     procedure setExpiryDate(ADate: TDateTime);
+    procedure setChargeScheme(AChargeScheme: TChargeType);
   public
-    procedure FormatCard(Signature: ansiString; AChargeScheme: TChargeType); override;
-    procedure LoadMetres(ASerialNumber: integer; IssuedTO: ansiString; AMetres: integer; AIssueDate,AExpiryDate: TDateTime); override;
-    procedure AddInfo(ALines: tStrings);
+    procedure FormatCard(AProduct: ansiString); override;
+    procedure LoadMetres(ASerialNumber: integer; IssuedTO: ansiString; AChargeScheme: TChargeType; AMetres: integer; AExpiryDate: TDateTime); override;
+    procedure AddInfo(ALines: tStrings); override;
  {$endif}
+  protected
+    function getMetres: integer;  override;
+    procedure setMetres(AValue: integer); override;
+    function  getIssueDate: TDateTime; override;
+    function  getExpiryDate: TDateTime; override;
   public
-    constructor Create;
+    constructor Create(AName: string); override;
     procedure Refresh;
-    function isUserMode: boolean; virtual;
-    function Signature: ansiString;
-    function SerialNumber: DWord;
-    function IssuedTO: ansiString;
-    function MetresIssued: integer;
-    property Metres: integer read getMetres write setMetres;
-    property IssueDate: TDateTime read getIssueDate;
-    property ExpiryDate: TDateTime read  getExpiryDate  {$ifdef CARDMASTER} write setExpiryDate {$ENDIF};
+    function isUserMode: boolean;
+    function Signature: ansiString;override;
+    function SerialNumber: DWord; override;
+    function IssuedTO: ansiString; override;
+    function MetresIssued: integer;override;
     function ChargeScheme: TChargeType; override;
-    function CheckCardOK(const ASignature: ansiString): boolean;
-    function isUnlimitedMetres: boolean;
+    function canFormat: boolean; override;
+    function canLoad: boolean; override;
+
   end;
 
 implementation
 
-{ tCardBase }
-
-constructor tCardBase.Create;
-begin
-  inherited Create;
-  if (CardApi.hContext <> 0) and (CardApi.CardState = csCard) then
-    try
-      SCardConnectW(CardApi.hContext, @CardApi.FReader[1], SCARD_SHARE_SHARED, SCARD_PROTOCOL_T0 or SCARD_PROTOCOL_T1, CardApi.hCard, @CardApi.dwActProtocol);
-    except
-    end;
-end;
-
-destructor tCardBase.Destroy;
-begin
-  assert(CardApi<>nil,'internal error - object finalization'); // card api must be freed after clients
-  if (CardApi.hContext <> 0) and (CardApi.hCard <> 0) then
-    SCardDisconnect(CardApi.hCard, SCARD_LEAVE_CARD);
-  CardApi.hCard := 0;
-  inherited;
-end;
-
-function tCardBase.ChargeScheme: TChargeType;
-begin
-  result := ccGreen;
-end;
-
-procedure tCardBase.FormatCard(Ident: ansiString; AChargeScheme: TChargeType);
-begin
-  raise Exception.Create('FormatCard - unknown card type');
-end;
-
-procedure tCardBase.LoadMetres(ASerialNumber: integer; IssuedTO: ansiString; Metres: integer; AIssueDate,AExpiryDate: TDateTime);
-begin
-  raise Exception.Create('LoadMetres: Unknown card');
-end;
-
-function tCardBase.ReadWord(Address: byte): LongWord;
-begin
-  SendCommand($80, $BE, $00, Address, $04);
-  result := FResponse.AsWord;
-end;
-
-procedure tCardBase.WriteString(Address: byte; Value: ansiString; nBytes: integer);
-begin
-  While Length(Value) < nBytes do
-    Value := Value + #00;
-  WriteBytes(Address,@Value[1], nBytes);
-end;
-
-function tCardBase.ReadString(Address: byte; ByteCount: integer): ansiString;
-var
-  x: DWord;
-  Bytes: array[0 .. 3] of ansichar absolute x;
-  WordCount, i, j: integer;
-begin
-  result := '';
-  WordCount := ByteCount div 4;
-  for i := 0 to pred(WordCount) do
-  begin
-    x := ReadWord(Address + i);
-    for j := 0 to 3 do
-      if Bytes[j]<> #0 then
-        result := result + Bytes[j];
-  end;
-end;
-
-procedure tCardBase.WriteWord(Address: byte; Value: LongWord);
-begin
-  SendCommand($80, $DE, $00, Address, 4, @Value);
-end;
-
-procedure tCardBase.WriteBytes(Address: byte; ABytePtr: pByte; nBytes: integer);
-begin
-  while nBytes > 0 do
-  begin
-    WriteWord(Address, pdword(ABytePtr)^);
-    dec(nBytes, 4);
-    inc(ABytePtr, 4);
-    inc(Address);
-  end;
-end;
 
 { TCardClubMemo }
 
-constructor TCardClubMemo.Create;
+
+constructor TCardClubMemo.Create(AName: string);
 begin
   Randomize;
   inherited;
@@ -216,50 +98,17 @@ end;
 procedure TCardClubMemo.Refresh;
 begin
   FIssuerByte :=0;
-  FChargeScheme:=ccGreen;
 
   if (CardApi.hContext <> 0) and (CardApi.CardState = csCard) then
   begin
     FIssuerByte := ReadWord(MAP_ISSSUERBits) SHR 24; // only want high byte
-    FChargeScheme := TChargeType(ReadWord(MAP_ACCESS) and $FF); // only want low byte
   end;
 
 end;
-procedure tCardBase.SendCommand(Cla, Ins, p1, p2, Le: byte; pData: pByte);
-var
-  Res: integer;
-  ioRequest: SCARD_IO_REQUEST;
-  SendBuff: array [0 .. 63] of byte;
-  SendLen: integer;
-begin
-  ioRequest.dwProtocol := CardApi.dwActProtocol;
-  ioRequest.dbPciLength := sizeof(SCARD_IO_REQUEST);
-  fillChar(SendBuff, sizeof(SendBuff), 0);
-  FResponse.Clear;
-  SendBuff[0] := Cla;
-  SendBuff[1] := Ins;
-  SendBuff[2] := p1;
-  SendBuff[3] := p2;
-  SendBuff[4] := Le;
-  SendLen := 5;
-  if pData <>nil then
-  begin
-    SendBuff[5] := pData[0];
-    SendBuff[6] := pData[1];
-    SendBuff[7] := pData[2];
-    SendBuff[8] := pData[3];
-    SendLen := 9;
-  end;
-  Res := SCardTransmit(CardApi.hCard, @ioRequest, @SendBuff, SendLen, Nil, @FResponse.RawData, @FResponse.Length);
 
-  if Res <> 0 then
-  begin
-    raise ECardIO.Create(Res);
-  end;
-  if (FResponse.Sw1 = $61) then
-    exit; // 'sw2' bytes available for getResponse
-  if (FResponse.Sw1 <> $90) or (FResponse.Sw2 <> 0) then
-    raise ECardIO.Create(FResponse.Sw1, FResponse.Sw2);
+function TCardClubMemo.ChargeScheme: TChargeType;
+begin
+  Result := TChargeType(ReadWord(MAP_ACCESS) and $FF); // only want low byte
 end;
 
 procedure TCardClubMemo.VerifyCSC(CSCID: byte; AValue: DWord);
@@ -276,7 +125,19 @@ begin
 end;
 
 {$ifdef CARDMASTER}
-procedure TCardClubMemo.FormatCard(Signature: ansiString; AChargeScheme: TChargeType);
+procedure TCardClubMemo.setChargeScheme(AChargeScheme: TChargeType);
+var
+  Bytes: array[0 .. 3] of byte;
+begin
+  // write access conditions
+  Bytes[3] := ACCESSCONDITION; // $00
+  Bytes[2] := $00;
+  Bytes[1] := $00;
+  Bytes[0] := ord(AChargeScheme);
+  WriteBytes(MAP_ACCESS, @Bytes);
+end;
+
+procedure TCardClubMemo.FormatCard(AProduct: ansiString);
 var
   Bytes: array[0 .. 3] of byte;
 begin
@@ -290,7 +151,7 @@ begin
   else
   begin
     VerifyCSC(0, $AAAAAAAA);
-    WriteString(MAP_SIGNATURE, Signature, 8);
+    WriteString(MAP_SIGNATURE, AProduct, 8);
     WriteWord(MAP_UID, Random(-1));
   end;
 
@@ -303,13 +164,6 @@ begin
   WriteString(MAP_ISSUEDTO, 'newcard', 32);
   Metres := 0; // property - set metres and encrypted metres
 
-  // write access conditions
-  Bytes[3] := ACCESSCONDITION; // $00
-  Bytes[2] := $00;
-  Bytes[1] := $00;
-  Bytes[0] := ord(AChargeScheme);
-  WriteBytes(MAP_ACCESS, @Bytes);
-
   // write IssuerBits
   Bytes[3] := $80; //   UserMode
   Bytes[2] := $00;
@@ -318,8 +172,8 @@ begin
   WriteBytes(MAP_ISSSUERBits, @Bytes);
 end;
 
-procedure TCardClubMemo.LoadMetres(ASerialNumber: integer; IssuedTO: ansiString; AMetres: integer;
-                                   AIssueDate,AExpiryDate: TDateTime);
+procedure TCardClubMemo.LoadMetres(ASerialNumber: integer; IssuedTO: ansiString; AChargeScheme: TChargeType;
+                                   AMetres: integer; AExpiryDate: TDateTime);
 begin
   if not isUserMode then
     raise Exception.Create('card is un-formatted');
@@ -330,9 +184,10 @@ begin
   WriteWord(MAP_SERIAL, ASerialNumber);
   WriteString(MAP_ISSUEDTO, IssuedTO, 16);
   WriteWord(MAP_METRESISSUED, AMetres);
-  setIssueDate(AIssueDate);
+  setIssueDate(Now);
   setExpiryDate(AExpiryDate);
   Metres := AMetres; // after metres-issued update
+  setChargeScheme(AChargeScheme);
 end;
 
 function TCardClubMemo.isKnownSignature: boolean;
@@ -436,11 +291,6 @@ begin
   result := (FIssuerByte = $80);
 end;
 
-function TCardClubMemo.isUnlimitedMetres: boolean;
-begin
-  Result := FChargeScheme = ccNoCharge;
-end;
-
 function TCardClubMemo.MetresIssued: integer;
 begin
   result := ReadWord(MAP_METRESISSUED);
@@ -531,78 +381,15 @@ begin
   result := ReadWord(MAP_SERIAL);
 end;
 
-function TCardClubMemo.ChargeScheme: TChargeType;
+function TCardClubMemo.canFormat: boolean;
 begin
-  result := FChargeScheme;
+  result := not isUserMode;;
 end;
 
-function TCardClubMemo.CheckCardOK(const ASignature: ansiString): boolean;
+function TCardClubMemo.canLoad: boolean;
 begin
-  try
-    if (FIssuerByte=0) and (CardApi.hContext <> 0) and (CardApi.CardState = csCard) then
-    begin
-      FIssuerByte := ReadWord(MAP_ISSSUERBits) SHR 24; // only want high byte
-      FChargeScheme := TChargeType(ReadWord(MAP_ACCESS) and $FF); // only want low byte
-    end;
-    result := isUserMode and ansiSameText(ASignature, Signature);
-  except
-    result := false;
-  end;
+  result := isUserMode;
 end;
 
-{ ECardIO }
-
-constructor ECardIO.Create(Sw1, Sw2: byte);
-begin
-  inherited Create('Card Error ' + inttohex(Sw1, 2)+ ' ' + inttohex(Sw2, 2));
-end;
-
-constructor ECardIO.Create(Res: integer);
-begin
-  inherited Create('Card Error ' + inttohex(Res, 8));
-end;
-
-{ TCardResponse }
-
-function TCardResponse.AsWord: LongWord;
-var p: PLongWord;
-begin
-  p := @RawData;
-  result := p^;
-end;
-
-procedure TCardResponse.Clear;
-begin
-  fillChar(RawData, sizeof(RawData), 0);
-  Length := sizeof(RawData);
-end;
-
-procedure TCardResponse.getData(var Res: TBytes);
-begin
-  setLength(Res, Self.Length - 2);
-  Move(RawData[0], Res[0], Self.Length - 2);
-end;
-
-function TCardResponse.Data: TBytes;
-begin
-  getData(result);
-end;
-
-function TCardResponse.Sw1: byte;
-begin
-  result := RawData[Length - 2];
-end;
-
-function TCardResponse.Sw2: byte;
-begin
-  result := RawData[Length - 1];
-end;
-
-{ ECardTamper }
-
-constructor ECardTamper.Create(s: string);
-begin
-  inherited Create('inconsistent card data ' + s);
-end;
 
 end.

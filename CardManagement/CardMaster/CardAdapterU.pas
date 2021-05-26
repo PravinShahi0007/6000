@@ -2,7 +2,8 @@ unit CardAdapterU;
 (***************************************************************
   Common interface to "old" cards and " new" cards
     Original cards are Gemplus "GemClub" code (Pete's) is CardU
-    New Cards are Gemplus "Gemclub Memu"; code is CardnewU
+    1st replacement was Gemplus "Gemclub Memu" - CardGemMemoU.pas)
+    next replacement Acos3 in CardAcos3U.pas & CardAcos3ConfigU.pas
 
   Usage tracking
     Metre useage is tracked in FCardDelta. When this value exceeds
@@ -12,7 +13,7 @@ unit CardAdapterU;
 ***************************************************************)
 
 interface
-uses Windows, sysUtils, dialogs, cardU, cardNewU,CardApiU;
+uses Windows, sysUtils, dialogs, cardBaseU, cardU, CardApiU;
 
 type
   TCardAdapter=class
@@ -22,7 +23,7 @@ type
     FCardDelta: double; // accumulated mm not yet deducted from card
     FCardType: TCardType;
     FOldCard:  TCard;
-    FMemoCard: TCardClubMemo;
+    FCardBase: TCardBase;
     procedure SetCardTypeFromATR;
     procedure updateCard;
   public
@@ -44,11 +45,11 @@ type
     function hasCredit: boolean;
     function NoCreditMessage: string;
     function ExpiryDate: tDateTime;
+    property CardBase : TCardBase read FCardBase;
   end;
 
 var
   CardAdapter: TCardAdapter;
-
 implementation
 
 { TCardAdapter }
@@ -56,22 +57,21 @@ implementation
 constructor TCardAdapter.Create;
 begin
   FOldCard:= TCard.Create(nil);
-  FMemoCard:=TCardClubMemo.Create;
 end;
 
 destructor TCardAdapter.Destroy;
 begin
   CardAdapter:=nil; // clear the singleton
   FOldCard.Free;
-  FMemoCard.Free;
+  freeAndNil(FCardBase);
   inherited;
 end;
 
 function TCardAdapter.ExpiryDate: tDateTime;
 begin
-  if (FCardType = ctNew) and
-     FMemoCard.isUnlimitedMetres then
-    Result := FMemoCard.ExpiryDate
+  if assigned(FCardBase)  and
+     FCardBase.isUnlimitedMetres then
+    Result := FCardBase.ExpiryDate
   else
     Result :=0;
 end;
@@ -113,15 +113,15 @@ end;
 function TCardAdapter.ChargeScheme: TChargeType;
 begin
   Result := ccGreen;
-  if (FCardType = ctNew) and
-     (FMemoCard.ChargeScheme in [ccGreen,ccRed,ccNoCharge]) then
-        Result := FMemoCard.ChargeScheme;
+  if assigned(FCardBase) and
+     (FCardBase.ChargeScheme in [ccGreen,ccRed,ccNoCharge]) then
+        Result := FCardBase.ChargeScheme ;
 end;
 
 function TCardAdapter.ChargeSchemeStr: String;
 begin
   if CardApi.CardState = csCard then
-    result := CardAPIU.ChargeSchemeStr(ChargeScheme)
+    result := tCardBase.ChargeSchemeStr(ChargeScheme)
   else
     result := APIStates[CardApi.CardState];
 end;
@@ -137,7 +137,7 @@ begin
     case FCardType of
      ctNone: Result := false;
      ctOld:  Result := FOldCard.CheckCardOK ;
-     ctNew:  Result := FMemoCard.CheckCardOK(Signature);
+     ctNew:  Result := FCardBase.CheckCardOK(Signature);
     end;
   end;
 end;
@@ -159,15 +159,18 @@ end;
 
 procedure TCardAdapter.SetCardTypeFromATR;
 begin
-  if CompareMem(@CardApi.ATR , @GemClubMemo[0], sizeof(GemClubMemo)) then
-    FCardType:=ctNew
-  else if (CardApi.CardState = csCard) and
+  if (CardApi.CardState = csCard) and
      CompareMem( @CardApi.ATR , @GemClub1K[0], sizeof(GemClub1K)) then
     FCardType:=ctOld
   else
-    FCardType:=ctNone;
-  if FCardType = ctNew then
-    FMemoCard.Refresh;
+  begin
+    freeAndNil(FCardBase);
+    FCardBase := TCardBase.Construct(@CardApi.ATR);
+    if FCardBase=nil then
+      FCardType := ctNone
+    else
+      FCardType := ctNew;
+  end;
 end;
 
 function TCardAdapter.CardID: string;
@@ -175,7 +178,7 @@ begin
   case FCardType of
     ctNone: Result := 'none';
     ctOld:  Result := FOldCard.cardID;
-    ctNew:  Result := FMemoCard.IssuedTO +' '+intToStr(FMemoCard.SerialNumber );
+    ctNew:  Result := FCardBase.IssuedTO +' '+intToStr(FCardBase.SerialNumber );
   end;
 end;
 
@@ -191,14 +194,14 @@ begin
         if i>0 then
           result := copy(result,1,i-1);
       end;
-    ctNew:  Result := FMemoCard.IssuedTO ;
+    ctNew:  Result := FCardBase.IssuedTO ;
   end;
 end;
 
 function TCardAdapter.isUnlimited: boolean;
 begin
   result := (FCardType = ctNew) and
-            FMemoCard.isUnlimitedMetres;
+            FCardBase.isUnlimitedMetres;
 end;
 
 {$region 'Metres on Card'}
@@ -238,7 +241,7 @@ begin
   Result := 0;
   case FCardType of
     ctOld:  Result := FOldCard.DecryptMT;
-    ctNew:  Result := FMemoCard.Metres;
+    ctNew:  Result := FCardBase.Metres;
   end;
 end;
 
@@ -268,7 +271,7 @@ begin
         begin
           FOldCard.SetCard(value) ;
         end;
-      ctNew:  FMemoCard.Metres := Value;
+      ctNew:  FCardBase.Metres := Value;
     end;
   end;
 end;

@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Buttons, ExtCtrls, CardAPIU;
+  Dialogs, StdCtrls, Buttons, ExtCtrls, CardBaseU;
 
 type
   TFormatDetail = class(TForm)
@@ -12,10 +12,10 @@ type
     rgPanelOrTruss: TRadioGroup;
     rgCardCharge: TRadioGroup;
     procedure rgPanelOrTrussClick(Sender: TObject);
-  private
   public
     function PanelOrTruss: AnsiString;
     function ChargeScheme: TChargeType;
+    procedure setChargeScheme(AValue: TChargeType);
   end;
 
 implementation
@@ -43,6 +43,15 @@ begin
   if rgCardCharge.ItemIndex <0 then
     raise exception.Create('no type selected');
   result := ChargeSchemeArray[rgCardCharge.ItemIndex];
+end;
+
+procedure TFormatDetail.setChargeScheme(AValue: TChargeType);
+begin
+  rgCardCharge.ItemIndex :=0;
+  case AValue of
+    ccRed :        rgCardCharge.ItemIndex:=1;
+    ccNoCharge :   rgCardCharge.ItemIndex:=2;
+  end;
 end;
 
 end.

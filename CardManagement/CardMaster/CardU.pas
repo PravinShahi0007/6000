@@ -43,6 +43,7 @@ type
 
    { TODO make these locals}
     sw1, sw2: byte;
+    SW12   : Word;
     cmdlen : uint16;
     ctc: ctcarray;
     data, resp: ansistring;
@@ -63,8 +64,8 @@ type
     procedure UpdatecardTotal;
     procedure VerifyPIN;
   public
-    CardID: ansistring;
-     machinetotal: string;
+    CardID: AnsiString;
+    MachineTotal : AnsiString;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     function CheckCardOK: boolean;
@@ -81,16 +82,107 @@ implementation
 
 uses LbCipher, lbString;
 
+function CardErrorToString(ErrorCode: Word): string;
+begin
+  case ErrorCode of
+    $9000: result := 'OK';
+    $9100: result := 'OK';
+    $6200: result := 'State of non-volatile memory unchanged';
+    $6281: result := 'State of non-volatile memory unchanged. Part of returned data may be corrupted.';
+    $6282: result := 'State of non-volatile memory unchanged. End of file/record reached before reading Le bytes.';
+    $6283: result := 'State of non-volatile memory unchanged. Selected file invalidated.';
+    $6284: result := 'State of non-volatile memory unchanged. FCI not formatted.';
+
+    $6300: result := 'State of non-volatile memory changed.';
+    $6381: result := 'State of non-volatile memory changed. File filled up by the last write.';
+
+    $6400: result := 'State of non-volatile memory unchanged.';
+    $6500: result := 'State of non-volatile memory changed.';
+    $6581: result := 'State of non-volatile memory changed. Memory Failure.';
+
+    $6700: result := 'Wrong length.';
+    $6800: result := 'Functions in CLA not supported.';
+    $6881: result := 'Functions in CLA not supported. Logical channel not supported.';
+    $6882: result := 'Functions in CLA not supported. Secure messaging not supported.';
+
+    $6900: result := 'Command not allowed. ';
+    $6981: result := 'Command not allowed. Command incompatible with file structure.';
+    $6982: result := 'Command not allowed. Security status not satisfied.';
+    $6983: result := 'Command not allowed. Authentication method blocked.';
+    $6984: result := 'Command not allowed. Referenced data invalidated.';
+    $6985: result := 'Command not allowed. Conditions of use not satisfied.';
+    $6986: result := 'Command not allowed. Command not allowed (no current EF).';
+    $6987: result := 'Command not allowed. Expected SM data objects missing.';
+    $6988: result := 'Command not allowed. SM data objects incorrect.';
+
+    $6A00: result := 'Wrong parameters P1 or P2.';
+    $6A80: result := 'Wrong parameter. Incorrect parameters in the data field.';
+    $6A81: result := 'Wrong parameter. Function not supported.';
+    $6A82: result := 'Wrong parameter. File not found.';
+    $6A83: result := 'Wrong parameter. Record not found.';
+    $6A84: result := 'Wrong parameter. Not enough memory space in the file.';
+    $6A85: result := 'Wrong parameter. Lc inconsistent with TLV structure.';
+    $6A86: result := 'Wrong parameters P1 or P2.';
+    $6A87: result := 'Wrong parameter. Lc inconsistent with P1-P2.';
+    $6A88: result := 'Wrong parameter. Referenced data not found.';
+
+    $6B00: result := 'Wrong parameters P1 or P2.';
+    $6D00: result := 'Instruction code not supported or invalid.';
+    $6E00: result := 'Class byte not supported.';
+    $6F00: result := 'Unknown error.';
+  else begin
+      case (ErrorCode shr 8) and $FF of
+        $61: result := IntToStr(ErrorCode and $FF) + ' response bytes are still available.';
+        $63:
+          begin
+            result := 'State of non-volatile memory changed.';
+            if (ErrorCode and $F0) = $C0 then
+            begin
+              result :=result +#10#13+ 'You have try wrong card on this machine';
+              result :=result +#10#13+ 'Remaining retry counter now is ' + IntToStr(ErrorCode and $0F);
+              result :=result +#10#13+ 'Be careful, every wrong try will decrease 1 counter';
+              result :=result +#10#13+ 'If remaining retry counter decrease to 0, the card will blocked';
+            end;
+          end;
+        $64: result := 'State of non-volatile memory unchanged.';
+        $6C: result := 'Wrong length Le: ' + IntToStr((ErrorCode and $FF)) + ' expected.';
+        $90: result := 'OK. ' + IntToStr((ErrorCode and $FF)) + ' response byte(s) available';
+        $91: result := 'DESFire specific error code: ' { + DESFireStatusToString(ErrorCode and $FF) };
+        $9F: result := 'OK. ' + IntToStr((ErrorCode and $FF)) + ' response byte(s) available';
+      else result := 'Unknown error code.';
+      end;
+    end;
+  end;
+end;
+
+
 function TCard.DecryptMT: longint;
 // *Returns integer of the decrypted MT (machine total for steel)
 var
-  ts, seedtext: ansistring;
-  Key128: TKey128;
+  ts        : AnsiString;
+  SeedText  : AnsiString;
+  Key128    : TKey128;
 begin
-  seedtext := string(floattostr(exp(pi)));
-  GenerateLMDKey(Key128, Sizeof(Key128), seedtext);
-  ts := TripleDESEncryptStringEx(machinetotal, Key128, false); // decrypt
-  result := strtoint(ts);
+  SeedText := String(FloatToStr(exp(pi)));
+  GenerateLMDKey(Key128, Sizeof(Key128), SeedText);
+  ts := TripleDESEncryptStringEx(MachineTotal, Key128, False); // decrypt
+  result := StrToInt(ts);
+end;
+
+procedure TCard.EncryptMT(mt: longint);
+// *encrypts mt into machinetotal string (machine total for steel)
+const
+  Spaces = '            ';
+var
+  ts       : AnsiString;
+  SeedText : AnsiString;
+  Key128   : TKey128;
+begin
+  ts := String(IntTostr(mt));
+  ts := copy(Spaces, 1, 12 - length(ts)) + ts;
+  SeedText := String(FloatToStr(exp(pi)));
+  GenerateLMDKey(Key128, Sizeof(Key128), SeedText);
+  MachineTotal := TripleDESEncryptStringEx(ts, Key128, True); // encrypt
 end;
 
 destructor TCard.Destroy;
@@ -100,27 +192,12 @@ begin
   inherited;
 end;
 
-procedure TCard.EncryptMT(mt: longint);
-// *encrypts mt into machinetotal string (machine total for steel)
-const
-  spaces = '            ';
-var
-  ts, seedtext: ansistring;
-  Key128: TKey128;
-begin
-  ts := string(inttostr(mt));
-  ts := copy(spaces, 1, 12 - length(ts)) + ts;
-  seedtext := string(floattostr(exp(pi)));
-  GenerateLMDKey(Key128, Sizeof(Key128), seedtext);
-  machinetotal := TripleDESEncryptStringEx(ts, Key128, true); // encrypt
-end;
-
 constructor TCard.Create(AOwner: TComponent);
 begin
   inherited;
   FDES := TDes.Create(self);
-  FDES. CipherMode := ECB;
-  FDES. StringMode := smEncode;
+  FDES.CipherMode := ECB;
+  FDES.StringMode := smEncode;
   SelectDLL;
   { Initialize MT (machine total) and CD (card delta) encrypted vars }
   EncryptMT(0); // 3DES for machinetotal & carddelta
@@ -174,7 +251,7 @@ begin
 end;
 
 procedure TCard.OpenReader;
-// *Open s/card reader using dll calls
+// *Open Smart Card reader using dll calls
 var
   res: Smallint;
 begin
@@ -185,7 +262,7 @@ begin
 end;
 
 function TCard.CloseReader: boolean;
-// *Closes s/card reader
+// *Closes Smart Card reader
 var
   res: Smallint;
 begin
@@ -208,7 +285,6 @@ begin
   le := 0;
   cmdlen := 4;
   data := #0;
-
   Cmd[1] := cla;
   Cmd[2] := ins;
   Cmd[3] := p1;
@@ -222,20 +298,20 @@ begin
   sw1 := 0;
   sw2 := 0;
   Fillchar(Rsp, Sizeof(Rsp), 32);
-
   cmdptr := addr(Cmd);
   rspptr := addr(Rsp);
   res := CTData(0, Dad, Sad, cmdlen, cmdptr, Lr, rspptr);
-
-  if (res = 0) and
-     (Lr >= 2) then
+  if (res = 0) and (Lr >= 2) then
   begin
+    SW12 := ((PByteArray(rspptr)^[Lr - 2]) shl 8) or PByteArray(rspptr)^[Lr - 1];
     sw1 := ord(Rsp[Lr - 1]);
     sw2 := ord(Rsp[Lr]);
     for i := 1 to Lr - 2 do
-      resp := resp + ansichar(Rsp[i]);
+      resp := resp + AnsiChar(Rsp[i]);
     if (sw1 <> $90) or (sw2 <> 1) then
-      raise ECardReadError.Create('');
+    Begin
+      raise Exception.Create(CardErrorToString(SW12));
+    End;
   end
   else
     raise ECardReadError.Create('');
@@ -244,8 +320,9 @@ end;
 function TCard.BuildMacBlocks(tag: byte; ctc: ctcarray; hdr, si: ansistring; var so: ansistring): Integer;
 // *Builds so data blk. See GemPlus s/card manual
 var
-  bc, i: Integer;
-  ts: ansistring;
+  bc  : Integer;
+  i   : Integer;
+  ts  : AnsiString;
 
   function pad(tag, n: byte): ansistring;
   const
@@ -261,23 +338,23 @@ begin { of BuildMacBlocks }
   so := '';
   ts := si;
   bc := 0;
-  so := ansichar(tag) + ansichar(ctc[1]) + ansichar(ctc[2]) + hdr;
+  so := AnsiChar(tag) + AnsiChar(ctc[1]) + AnsiChar(ctc[2]) + hdr;
   inc(bc);
-  if length(ts) > 7 then
+  if Length(ts) > 7 then
   begin
-    for i := 1 to (length(si) div 7) do
+    for i := 1 to (Length(si) div 7) do
     begin
-      so := so + ansichar(tag) + copy(ts, 1, 7);
+      so := so + AnsiChar(tag) + copy(ts, 1, 7);
       delete(ts, 1, 7);
     end;
-    so := so + ansichar(tag) + ts + pad(tag, 7 - length(ts));
-    bc := bc + length(si) div 7 + 1;
+    so := so + AnsiChar(tag) + ts + pad(tag, 7 - Length(ts));
+    bc := bc + Length(si) div 7 + 1;
   end
   else
   begin
-    so := so + ansichar(tag) + si + pad(tag, 7 - length(si));
+    so := so + AnsiChar(tag) + si + pad(tag, 7 - Length(si));
     inc(bc);
-    if length(si) = 7 then
+    if Length(si) = 7 then
       inc(bc);
   end;
   result := bc;
@@ -285,13 +362,12 @@ end;
 
 procedure TCard.ReadCounter;
 var
-  i: word;
-  res: Smallint;
+  i   : Word;
+  res : SmallInt;
   // *Reads the steel counter from s/card
   // *String data is also xor encrypted, to avoid user read of totals, outside SCS s/ware
   // *value is always stored in metres, and converted to feet if imperial
   // *See GemPlus manual for cmd data structures
-
 begin
   Dad := 0;
   Sad := 2; { p2=sfi 20:2 28:3 }
@@ -318,20 +394,19 @@ begin
   resp := '';
   sw1 := 0;
   sw2 := 0;
-
   cmdptr := addr(Cmd);
   rspptr := addr(Rsp);
   res := CTData(0, Dad, Sad, cmdlen, cmdptr, Lr, rspptr);
-  if (res = 0) and
-     (Lr >= 2) then
+  if (res = 0) and (Lr >= 2) then
   begin
+    SW12 := ((PByteArray(rspptr)^[Lr - 2]) shl 8) or PByteArray(rspptr)^[Lr - 1];
     sw1 := ord(Rsp[Lr - 1]);
     sw2 := ord(Rsp[Lr]);
     for i := 1 to Lr - 2 do
-      resp := resp + ansichar(Rsp[i]);
+      resp := resp + AnsiChar(Rsp[i]);
     if (sw1 <> $90) or (sw2 <> 0) then
-      raise ECardReadError.Create('');
-    machinetotal := resp; // encrypted card total
+      raise Exception.Create(CardErrorToString(SW12));
+    MachineTotal := resp; // encrypted card total
   end
   else
     raise ECardReadError.Create('');
@@ -341,8 +416,8 @@ procedure TCard.ReadID;
 // *Returns s/card ID (programmed user name)
 // *See GemPlus manual for cmd data structures
 var
-  i: word;
-  res: Smallint;
+  i   : Word;
+  res : SmallInt;
 begin
   Dad := 0;
   Sad := 2; { p2=sfi 20:2 28:3 }
@@ -374,10 +449,13 @@ begin
   res := CTData(0, Dad, Sad, cmdlen, cmdptr, Lr, rspptr);
   if (res = 0) and (Lr >= 2) then
   begin
+    SW12 := ((PByteArray(rspptr)^[Lr - 2]) shl 8) or PByteArray(rspptr)^[Lr - 1];
     sw1 := ord(Rsp[Lr - 1]);
     sw2 := ord(Rsp[Lr]);
     if (sw1 <> $90) or (sw2 <> 0) then
-      raise ECardReadError.Create('');
+    Begin
+      raise Exception.Create(CardErrorToString(SW12));
+    End;
   end else
     raise ECardReadError.Create('');
 
@@ -393,92 +471,89 @@ procedure TCard.UpdatecardTotal;
 const
   zeros = #0 + #0 + #0 + #0 + #0 + #0 + #0 + #0;
 var
-  key1,key2, hdr, si, so, s: ansistring;
-  bc: byte;
-  i: Integer;
-  blk1, blk2: tblock;
-  res: Smallint;
-  ts, seedtext: ansistring;
-  Key128: TKey128;
-  tag: byte;
-  mac: ansistring;
+  key1     : AnsiString;
+  key2     : AnsiString;
+  hdr      : AnsiString;
+  si       : AnsiString;
+  so       : AnsiString;
+  s        : AnsiString;
+  bc       : Byte;
+  i        : Integer;
+  blk1     : TBlock;
+  blk2     : TBlock;
+  res      : Smallint;
+  ts       : AnsiString;
+  seedtext : AnsiString;
+  Key128   : TKey128;
+  tag      : Byte;
+  mac      : AnsiString;
 
 
-  function XorBlks(b1, b2: tblock): tblock;
+  function XorBlks(b1, b2: TBlock): TBlock;
   // *XOR 2 arrays
   var
-    ts: tblock;
-    i: Integer;
+    ts : TBlock;
+    i  : Integer;
   begin
     for i := 0 to 7 do
       ts[i] := b1[i] xor b2[i];
     result := ts;
   end;
 
-  function StrtoBlk(s: ansistring): tblock;
+  function StrToBlk(s: AnsiString): TBlock;
   // *Convert string into integer array
   var
-    i: Integer;
-    inblk: tblock;
+    i     : Integer;
+    inblk : TBlock;
   begin
     for i := 0 to 7 do
       inblk[i] := ord(s[i + 1]);
     result := inblk;
   end;
 
-  function BlktoStr(b: tblock): ansistring;
+  function BlktoStr(b: TBlock): AnsiString;
   // *Convert Integer array -> string
   var
     i: Integer;
   begin
     s := '00000000';
-    for i := 0 to 7 do
-      s[i + 1] := ansichar(b[i]);
+    For i := 0 to 7 do
+      s[i + 1] := AnsiChar(b[i]);
     result := s;
   end;
 
 begin { of UpdateCardTotal }
-  // s/card keys
+  // Smart Card Keys
   // ==============================================================================
   { Compiler directive to select encryption for panels or trusses }
 {$IFDEF Panel}
   // ScotRF panel keys
   // ==============================
-{$IFDEF Version5Card}
-  ts := string(floattostr(sqrt(sin(ln(pi))))); // Panel Card version 5
-  seedtext := string(floattostr(pi * pi * pi));
-{$ELSE}
-  ts := string(floattostr(sqrt(ln(pi)))); // Panel Card version 4
-  seedtext := string(floattostr(pi * pi));
-{$ENDIF}
-  GenerateLMDKey(Key128, Sizeof(Key128), seedtext);
+  ts := String(FloatToStr(sqrt(sin(ln(pi))))); // Panel Card version 5
+  SeedText := String(FloatToStr(pi * pi * pi));
+  GenerateLMDKey(Key128, Sizeof(Key128), SeedText);
   ts := TripleDESEncryptStringEx(ts, Key128, true);
 {$ELSE}
-{$IFDEF Version5Card}
-  ts := floattostr(cos(sqr(ln(pi * pi))));
-  seedtext := floattostr(exp(pi * pi)); // Truss Card version 5
-{$ELSE}
-  ts := floattostr(cos((ln(pi))));
-  seedtext := floattostr(exp(pi)); // Truss Card version 4
-{$ENDIF}
-  GenerateLMDKey(Key128, Sizeof(Key128), seedtext);
+  ts := FloatToStr(cos(sqr(ln(pi * pi))));
+  SeedText := FloatToStr(exp(pi * pi)); // Truss Card version 5
+  GenerateLMDKey(Key128, Sizeof(Key128), SeedText);
   ts := TripleDESEncryptStringEx(ts, Key128, true);
 {$ENDIF}
-  data := machinetotal;
+  data := MachineTotal;
 
-  tag := $81; { lc=8 or 24 }
-  Dad := 0;
-  Sad := 2; { p2=sfi 20:2 28:3 }
-  cla := 4;
-  ins := $DC;
-  p1 := 1;
-  p2 := 20;
-  Lc := $20;
-  le := $20;
+  tag    := $81; { lc=8 or 24 }
+  Dad    := 0;
+  Sad    := 2; { p2=sfi 20:2 28:3 }
+  cla    := 4;
+  ins    := $DC;
+  p1     := 1;
+  p2     := 20;
+  Lc     := $20;
+  le     := $20;
   cmdlen := 37;
-  key1 := copy(ts, 1, 8);
-  key2 := copy(ts, 9, 8);
-  ts := 'fjfdsfdsygrh'; { overwrite key }
+  key1   := copy(ts, 1, 8);
+  key2   := copy(ts, 9, 8);
+  ts     := 'fjfdsfdsygrh'; { overwrite key }
 
   if ctc[2] < 255 then
     inc(ctc[2])
@@ -494,13 +569,13 @@ begin { of UpdateCardTotal }
   // xorwith(key1,'P#8!s0+?');
   // =================================================
 
-  hdr := ansichar(cla) + ansichar(ins) + ansichar(p1) + ansichar(p2) + ansichar(Lc);
-  si := data;
-  bc := BuildMacBlocks(tag, ctc, hdr, si, so);
+  hdr  := AnsiChar(cla) + AnsiChar(ins) + AnsiChar(p1) + AnsiChar(p2) + AnsiChar(Lc);
+  si   := data;
+  bc   := BuildMacBlocks(tag, ctc, hdr, si, so);
   blk1 := StrtoBlk(zeros);
   for i := 1 to bc - 1 do { des for blks 1 .. n-1 }
   begin
-    blk2 := StrtoBlk(copy(so, 1, 8));
+    blk2 := StrToBlk(copy(so, 1, 8));
     blk1 := XorBlks(blk1, blk2);
     delete(so, 1, 8);
     FDES.initialiseString(key1);
@@ -509,18 +584,18 @@ begin { of UpdateCardTotal }
   end;
   { 3des for blk n }
   // if length(so) <> 8 then showmessage('Internal security error');
-  blk2 := StrtoBlk(copy(so, 1, 8));
+  blk2 := StrToBlk(copy(so, 1, 8));
   blk1 := XorBlks(blk1, blk2);
-  FDES.initialiseString(key1);
+  FDES.InitialiseString(key1);
   FDES.EncBlock(blk1, blk2);
   blk1 := blk2;
-  FDES.initialiseString(key2);
+  FDES.InitialiseString(key2);
   FDES.DecBlock(blk1, blk2);
   blk1 := blk2;
   FDES.initialiseString(key1);
   FDES.EncBlock(blk1, blk2);
   blk1 := blk2;
-  mac := BlktoStr(blk1); { BuildCmd }
+  mac := BlkToStr(blk1); { BuildCmd }
 
   Cmd[1] := cla;
   Cmd[2] := ins;
@@ -536,19 +611,20 @@ begin { of UpdateCardTotal }
   resp := '';
   sw1 := 0;
   sw2 := 0;
-  Fillchar(Rsp, Sizeof(Rsp), 32);
-
+  FillChar(Rsp, Sizeof(Rsp), 32);
   cmdptr := addr(Cmd);
   rspptr := addr(Rsp);
   res := CTData(0, Dad, Sad, cmdlen, cmdptr, Lr, rspptr);
   if (res = 0) or (lr>=2) then
   begin
+    SW12 := ((PByteArray(rspptr)^[Lr - 2]) shl 8) or PByteArray(rspptr)^[Lr - 1];
     sw1 := ord(Rsp[Lr - 1]);
     sw2 := ord(Rsp[Lr]);
     if (sw1 <> $61) or (sw2 <> 10) then
-      raise ECardUpdateError .Create('card update failed');
-  end else
-    raise ECardUpdateError.Create('card update failed');
+      raise Exception.Create(CardErrorToString(SW12));
+  end
+  else
+    raise ECardUpdateError.Create('card update failed, NOT((res = 0) or (lr>=2))');
 
   key1 := 'Scottsdale'; // clr keys
   key2 := '(C)opyright 2011';
@@ -568,25 +644,15 @@ begin
   ins := $20;
   p1 := 0;
   p2 := 0;
-  Lc := 8;
+  Lc := 8; // verify
+//  Lc := 0;  //check count
+
   le := 0;
   cmdlen := 13;
 {$IFDEF Truss}
-{$IFDEF Version5Card}
-  data := #$7A + #$55 + #$FF + #$C5 + #$02 + #$D7 + #$27 + #$82;
-  // TrussCard v 5
+  data := #$7A + #$55 + #$FF + #$C5 + #$02 + #$D7 + #$27 + #$82;  // TrussCard v 5
 {$ELSE}
-  data := #198 + #207 + #160 + #106 + #135 + #20 + #188 + #212;
-  // TrussCard v 3 and 4
-{$ENDIF}
-{$ELSE}
-{$IFDEF Version5Card}
-  data := #$AC + #$E3 + #$1B + #$A5 + #$C2 + #$D7 + #$20 + #$52;
-  // PanelCard v 5
-{$ELSE}
-  data := #$1C + #$13 + #$7B + #05 + #$22 + #$B7 + #$B0 + #$D2;
-  // PanelCard v 3 and 4
-{$ENDIF}
+  data := #$AC + #$E3 + #$1B + #$A5 + #$C2 + #$D7 + #$20 + #$52;  // PanelCard v 5
 {$ENDIF}
   Cmd[1] := cla;
   Cmd[2] := ins;
@@ -603,17 +669,18 @@ begin
   Fillchar(Rsp, Sizeof(Rsp), 32);
   cmdptr := addr(Cmd);
   rspptr := addr(Rsp);
-
   res := CTData(0, Dad, Sad, cmdlen, cmdptr, Lr, rspptr);
-  if (res = 0) and
-     (Lr >= 2) then
+  if (res = 0) and (Lr >= 2) then
   begin
+    SW12 := ((PByteArray(rspptr)^[Lr - 2]) shl 8) or PByteArray(rspptr)^[Lr - 1];
     sw1 := ord(Rsp[Lr - 1]);
     sw2 := ord(Rsp[Lr]);
     if (sw1 <>$90) or (sw2 <>0) then
-      raise EAlienCard.Create('Invalid Scottsdale Card');
-  end else
+      raise Exception.Create(CardErrorToString(SW12));
+  end
+  else
      raise ECardReadError.Create('');
+
 end;
 
 procedure TCard.ReadCTC;
@@ -624,7 +691,7 @@ const
   zeros = #0 + #0 + #0 + #0 + #0 + #0 + #0 + #0;
 var
   res: Smallint;
-  i: word;
+  I    : Word;
 begin
   Dad := 0;
   Sad := 2;
@@ -686,16 +753,18 @@ begin
   rspptr := addr(Rsp);
 
   res := CTData(0, Dad, Sad, cmdlen, cmdptr, Lr, rspptr);
-  if (res = 0) and
-     (lr>=2)  then
+  if (res = 0) and (lr>=2)  then
   begin
+    SW12 := ((PByteArray(rspptr)^[Lr - 2]) shl 8) or PByteArray(rspptr)^[Lr - 1];
     sw1 := ord(Rsp[Lr - 1]);
     sw2 := ord(Rsp[Lr]);
     if (sw1 <> $90) or (sw2 <> 0) then
-      raise ECardReadError.Create('');
-  end else
+    Begin
+      raise Exception.Create(CardErrorToString(SW12));
+    End;
+  end
+  else
     raise ECardReadError.Create('');
-
 
   ctc[1] := ord(Rsp[1]);
   ctc[2] := ord(Rsp[2]);
@@ -717,12 +786,13 @@ begin
   try
     OpenReader;
     Checkcard;
-//    VerifyPIN;
+// verify Pin removed due to frequent bad-cards being reported by customers
+ VerifyPIN;
     ReadCounter;
     ReadID;
 
 {$IFNDEF RELEASE}
-//  setcard(10000); {$message warn 'SETCARD'}
+//   setcard(1000); {$message warn 'SETCARD'}
 {$ENDIF}
     result := true;
   except

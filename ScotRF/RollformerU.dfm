@@ -22,7 +22,7 @@ object Rollformer: TRollformer
     SettingsStore.RegRoot = rrCURRENTUSER
     SettingsStore.Location = slINIFile
     OnRxChar = VaComm1RxChar
-    Version = '2.0.4.0'
+    Version = '2.1.0.1'
     Left = 16
     Top = 16
   end

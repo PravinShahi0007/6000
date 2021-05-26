@@ -34,6 +34,10 @@ object FormSettings: TFormSettings
     OnChange = PageControl1Change
     object TabSheet1: TTabSheet
       Caption = 'General'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label21: TLabel
         Left = 17
         Top = 9

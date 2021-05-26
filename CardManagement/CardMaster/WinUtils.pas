@@ -33,6 +33,7 @@ procedure getAppVersion(var sMajor, sMinor, sRelease, sBuild: string);
 function HexToInt(s: string): longword;
 procedure ExecNonModalApp(const exeName,command: string;  var procInfo:TProcessInformation);
 function CreateGuid: string;
+function memToHex(mem: pointer; Len: uint8): string;
 
 implementation
 
@@ -385,5 +386,25 @@ begin
    if CoCreateGuid(ID) = S_OK then
      Result := GUIDToString(ID);
 end;
+function memToHex(mem: pointer; Len: uint8): string;
+var
+  p: pbyte;
+  N: UInt8;
+begin
+  result := '';
+  p:=mem;
+  while len>0 do
+  begin
+    N := p^;
+    if result='' then
+      result := inttohex(N,sizeof(N)*2)
+    else
+      result := result + inttohex(N,sizeof(N)*2);
+{$pointerMath on}
+    p:=p+1;
+    len:=len-sizeof(N);
+  end;
+end;
+initialization
 
 END.

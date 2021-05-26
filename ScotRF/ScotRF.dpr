@@ -47,7 +47,6 @@ uses
   ManufactureU in 'ManufactureU.pas',
   TrussManual in 'TrussManual.pas' {TrussManualForm},
   PreviewU in 'PreviewU.pas' {PreviewForm},
-  CardNewU in '..\CardManagement\CardMaster\CardNewU.pas',
   WinSCard in '..\CardManagement\CardMaster\WinSCard.pas',
   CardAPIU in '..\CardManagement\CardMaster\CardAPIU.pas' {CardApi: TDataModule},
   PasswordU in '..\CardManagement\CardMaster\PasswordU.pas' {pwdForm},
@@ -93,7 +92,8 @@ uses
   Vcl.Styles,
   UnitDSServerDB in '..\Common\UnitDSServerDB.pas',
   UnitDisplayDataset in '..\Common\UnitDisplayDataset.pas' {FormDisplayDataset},
-  UnitJobFoundForm in '..\ClientCommon\UnitJobFoundForm.pas' {FormJobFound};
+  UnitJobFoundForm in '..\ClientCommon\UnitJobFoundForm.pas' {FormJobFound},
+  CardBaseU in '..\CardManagement\CardMaster\CardBaseU.pas';
 
 {$R *.RES}
 

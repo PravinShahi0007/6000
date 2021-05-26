@@ -154,7 +154,8 @@ begin
 end;
 
 function PickADirectory(ACaption: string; var Directory: string; AFileName: string= ''): Boolean;
-var SelectFolderDialog: TFileOpenDialog;
+var
+  SelectFolderDialog: TFileOpenDialog;
 begin
   if CheckWin32Version(6) then //vista+
   begin

@@ -4,7 +4,7 @@ interface
 
 uses
   System.JSON, System.Classes, SysUtils, Generics.Collections, CardAPIU, Graphics, IniFiles,
-  Registry, Data.FireDACJSONReflect, FireDAC.Comp.Client;
+  Registry, Data.FireDACJSONReflect, FireDAC.Comp.Client, CardBaseU;
 
 type
 
@@ -702,7 +702,7 @@ end;
 
 Function TCardInfomation.GetCardName : String;
 begin
-  result := CardApi.CardName;
+//  result := CardApi.CardName;
 end;
 
 function TCardInfomation.GetStatusLight : TStatusLight;
