@@ -142,9 +142,6 @@ type
     property DMRemoteDB : TDMRemoteDB read FDMRemoteDB;
   end;
 
-var
-  RemoteDB: TRemoteDB;
-
 implementation
 
 {%CLASSGROUP 'Vcl.Controls.TControl'}

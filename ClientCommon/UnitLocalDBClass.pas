@@ -302,10 +302,6 @@ type
     procedure ApplyUpdates( aTableName: String; var aDataSet   : TFDMemTable );
   end;
 
-
-var
-  DMLocalDB: TDMLocalDB;
-
 implementation
 
 {%CLASSGROUP 'Vcl.Controls.TControl'}
