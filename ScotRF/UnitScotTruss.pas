@@ -986,11 +986,11 @@ begin
   if assigned(ProductionQueueQ) and assigned(FDisplayFrame) then
   begin
     if FSelectedItem <> nil then
-      TFrameDraw.DrawStructure2(FDisplayFrame, FSelectedItem, true, PaintBox1.canvas, R, Self.GetItemColor)
+      TFrameDraw.DrawFrameStructure(FDisplayFrame, FSelectedItem, true, PaintBox1.canvas, R, Self.GetItemColor)
     else if ProductionQueueQ.Running then
-      TFrameDraw.DrawStructure2(FDisplayFrame, ProductionQueueQ.CurrentEntity, false, PaintBox1.canvas, R, Self.GetItemColor)
+      TFrameDraw.DrawFrameStructure(FDisplayFrame, ProductionQueueQ.CurrentEntity, false, PaintBox1.canvas, R, Self.GetItemColor)
     else
-      TFrameDraw.DrawStructure2(FDisplayFrame, nil, false, PaintBox1.canvas, R, Self.GetItemColor);
+      TFrameDraw.DrawFrameStructure(FDisplayFrame, nil, false, PaintBox1.canvas, R, Self.GetItemColor);
   end
   else
     TFrameDraw.FillRect(PaintBox1.canvas, R);

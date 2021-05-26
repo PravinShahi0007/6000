@@ -341,7 +341,7 @@ begin
   begin
     try
       abookmark := FDMemTableFrameEntity.GetBookmark;
-      TFrameDraw.DrawStructure2(TSteelFrame.Create(FDMemTableFrame, FDMemTableFrameEntity), nil, false, PaintBoxFrame.canvas, R, GetItemColor);
+      TFrameDraw.DrawFrameStructure(TSteelFrame.Create(FDMemTableFrame, FDMemTableFrameEntity), nil, false, PaintBoxFrame.canvas, R, GetItemColor);
       FDMemTableFrameEntity.GotoBookmark(abookmark);
     finally
     end;

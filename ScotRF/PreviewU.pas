@@ -88,7 +88,7 @@ begin
   PaintBox1.canvas.FillRect(R);
   InflateRect(R,-12,-12);
   F := FrameSelection.SelectedFrames[FCurrentFrame];
-  TFrameDraw.DrawStructure2(F, FSelectedItem, True, PaintBox1.canvas,  R, GetItemColor);
+  TFrameDraw.DrawFrameStructure(F, FSelectedItem, True, PaintBox1.canvas,  R, GetItemColor);
 end;
 
 procedure TPreviewForm.SetCurrentFrame(const Value: Integer);

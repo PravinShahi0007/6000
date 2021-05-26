@@ -745,7 +745,6 @@ var
   aStringList  : TStringlist;
   aString      : String;
   spaceRemoved : String;
-  isFrame      : Boolean;
 begin
   FrameToProduce.ResetSelectedFrames;
   if CheckCard and ((DriveClass = tdcSim) or CheckConnectionWithMessage) then
