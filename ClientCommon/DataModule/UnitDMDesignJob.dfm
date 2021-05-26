@@ -3,7 +3,7 @@ object DMDesignJob: TDMDesignJob
   OnCreate = DataModuleCreate
   OnDestroy = DataModuleDestroy
   Height = 626
-  Width = 1051
+  Width = 1110
   object DataSourceJob: TDataSource
     DataSet = FDMemTableJOB
     Left = 496
@@ -685,7 +685,7 @@ object DMDesignJob: TDMDesignJob
     UpdateOptions.CheckRequired = False
     UpdateOptions.AutoCommitUpdates = True
     Left = 920
-    Top = 112
+    Top = 96
     object FDMemTableRFDateInfoRFDATEINFOID: TSmallintField
       FieldName = 'RFDATEINFOID'
     end

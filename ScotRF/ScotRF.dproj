@@ -229,7 +229,8 @@
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(MSBuildProjectName)</VerInfo_Keys>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
-        <DCC_ExeOutput>C:\Program Files (x86)\SCS\ScotRF-Truss\</DCC_ExeOutput>
+        <DCC_ExeOutput>C:\ScotRFProductionOutput\Bin\Truss\</DCC_ExeOutput>
+        <DCC_UnitSearchPath>..\CardManagement\CardMaster;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_4)'!=''">
         <DCC_ExeOutput>C:\Program Files (x86)\SCS\ScotRF-Panel\</DCC_ExeOutput>
@@ -593,13 +594,13 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="images\ScotTrussLogo.bmp" Configuration="Panel" Class="ProjectFile">
+                <DeployFile LocalName="images\ScotTrussLogo.bmp" Configuration="Release Panel" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="images\ScotTrussLogo.bmp" Configuration="Release Panel" Class="ProjectFile">
+                <DeployFile LocalName="images\ScotTrussLogo.bmp" Configuration="Panel" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>

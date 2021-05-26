@@ -16,8 +16,8 @@ uses
   Vcl.DBGrids, Winapi.ShlObj;
 
 type
-  tToolPanelPos=(tppNone,tppTopLeft,tppTopRight,tppBottomRight, tppBottomLeft);
-type
+  TToolPanelPos=(tppNone,tppTopLeft,tppTopRight,tppBottomRight, tppBottomLeft);
+
   TFormSettings = class(TForm)
     PageControl1: TPageControl;
     TabSheet1: TTabSheet;
