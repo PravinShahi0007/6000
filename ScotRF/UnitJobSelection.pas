@@ -362,16 +362,17 @@ end;
 
 procedure TFormJobSelection.SelectFrame(Sender: TObject);
 var
+  i           : Integer;
+  j           : Integer;
   aSteelFrame : TSteelFrame;
-  i, j : Integer;
 begin
-  If DMLoadEP2Files.FileStrings.Count=0 then
-    DMLoadEP2Files.RestoreFile(DMDesignJob.FDMemTableEP2FILE);
+  DMDesignJob.FDMemTableFrame.AfterScroll := nil;
   For i := 0 to JvDBGridFrame.SelectedRows.Count-1 do
   try
     AddItem(JvDBGridFrame.SelectedRows[i]);
     DMDesignJob.FDMemTableFrame.GotoBookmark(JvDBGridFrame.SelectedRows[i]);
-    aSteelFrame :=  DMLoadEP2Files.LoadSelectedFrameToProduce(DMDesignJob.FDMemTableEP2FILE, DMDesignJob.FDMemTableFrame);
+    with DMDesignJob do
+      aSteelFrame := TSteelFrame.Create(FDMemTableFrame, FDMemTableFrameEntity);
     aSteelFrame.NumberOfFrames := StrToIntDef(EditToDo.Text, 1);
     if aSteelFrame.NumberOfFrames=0 then
       aSteelFrame.NumberOfFrames :=1;
