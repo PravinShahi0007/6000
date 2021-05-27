@@ -11,6 +11,8 @@ type
   TSteelFrame = class;
   TItemProcess   = reference to procedure(anEntityPointer: pEntityRecType);
   TProcessFilter = reference to function(AFrame: TSteelFrame; anEntityPointer: pEntityRecType): Boolean;
+  TGetItemColor = Function(AFrame: TSteelFrame; p:pEntityRecType): TColor of object;
+
 
   TEntitys = Array of EntityRecType;
 
@@ -105,6 +107,32 @@ type
     FSITEID         : Integer;
     FROLLFORMERID   : Integer;
     FTRANSFERTORFID : Integer;
+
+    FCanvasRect     : TRect;
+    FCanvas         : TCanvas;
+    FOnGetColour    : TGetItemColor;
+
+    FOrigin         : Point2D; // 2D point at image centre
+    FRectCentre     : TPoint; // image centre
+    FScale          : Double;
+
+    procedure InitCanvas;
+    procedure SetScaleAndOrigin;
+
+    procedure SetFont(AColor:TColor=clblack; ASize:integer=8; AStyle: TFontStyles=[]); overload;
+    procedure SetFont(AColor:TColor; AStyle: TFontStyles=[]); overload;
+    function  Client2Screen(Pt: Point2D): TPoint;
+    Function  GetEntityPoints(Ent: pEntityRecType): RectType;
+    procedure DrawItem(p: pEntityRecType);
+    procedure DrawOperations(pEnt: pEntityRecType);
+    procedure LineOut(AP1, AP2: Point2D);
+    procedure TextOut(s: string; APt: Point2D);
+
+    procedure TextOutAtP(APt: Point2D; Caption: string; dy: integer);
+    procedure Circle(APt: Point2D; ARadius: integer; AColor: TColor);
+    procedure Square(APt: Point2D; ARadius: integer; AColor: TColor);
+    procedure SquareUnder(APt: Point2D; ARadius: integer; AColor: TColor);
+
   public
     xMin : Double;
     xMax : Double;
@@ -119,6 +147,7 @@ type
     function MaterialLength: double;
     function  ProcessFrame: Integer;
     procedure ForEachItem(proc: TItemProcess);
+    procedure DrawSteelFrame(aCanvas : TCanvas);
     property FrameID        : integer  read FFrameID        write FFrameID;
     property FrameName      : string   read FFrameName      write FFrameName;
     property PreCamber      : double   read FPreCamber      write FPreCamber;
@@ -1262,5 +1291,251 @@ begin
     end;
 end;
 
+procedure TSteelFrame.InitCanvas;
+begin
+  FCanvas.Pen.color := clBlack;
+  FCanvas.Pen.Width := 1;
+  FCanvas.FillRect(FCanvasRect);
+  FCanvas.font.name:='Arial';
+end;
+
+procedure TSteelFrame.SetScaleAndOrigin;
+var
+  xrange : Double;
+  yrange : Double;
+  W      : Integer;
+  H      : Integer;
+begin
+  FOrigin.X := (xmax + xmin)/ 2;
+  FOrigin.Y := (ymax + ymin)/ 2;
+  xrange    := abs(xmax - xmin);
+  yrange    := abs(ymax - ymin);
+
+  W := FCanvasRect.Right  - FCanvasRect.Left;
+  H := FCanvasRect.Bottom - FCanvasRect.Top;
+  FRectCentre := Point(FCanvasRect.Left + W div 2, FCanvasRect.Top + H div 2); // image centre
+  FScale := min(W / xrange, H / yrange);
+end;
+
+procedure TSteelFrame.SetFont(AColor:TColor; ASize:integer; AStyle: TFontStyles);
+begin
+  FCanvas.Font.Color := AColor;
+  FCanvas.Font.Size  := ASize;
+  FCanvas.Font.Style := AStyle;
+end;
+
+procedure TSteelFrame.SetFont(AColor: TColor; AStyle: TFontStyles);
+begin
+  FCanvas.Font.Color := AColor;
+  FCanvas.Font.Style := AStyle;
+end;
+
+function TSteelFrame.Client2Screen(Pt: Point2D): TPoint;
+// Convert from real-world coordinates to screen coordinates
+begin
+  Result.X := FRectCentre.X + round(FScale * (Pt.X - FOrigin.X));
+  Result.Y := FRectCentre.Y - round(FScale * (Pt.Y - FOrigin.Y));
+end;
+
+function TSteelFrame.GetEntityPoints(Ent: pEntityRecType): RectType;
+var
+  ScreenPoint: TPoint;
+  I : Integer;
+begin
+  for I := 1 to 4 do
+  begin
+    ScreenPoint:= Client2Screen(Ent^.Pt[i]);
+    result.Pt[i].x := ScreenPoint.x; // int -> double
+    result.Pt[i].y := ScreenPoint.y; // int -> double
+  end;
+end;
+
+procedure TSteelFrame.LineOut(AP1, AP2: Point2D);
+// Display line from real-world coordinates
+var
+  p1, p2: TPoint;
+begin
+  p1 := Client2Screen(AP1);
+  p2 := Client2Screen(AP2);
+  FCanvas.MoveTo(p1.X, p1.Y);
+  FCanvas.LineTo(p2.X, p2.Y);
+end;
+
+procedure TSteelFrame.TextOut(s: string; APt: Point2D);
+var
+  p: TPoint;
+begin
+  // default alignment:  top-left of text
+  p := Client2Screen(APt);
+  FCanvas.TextOut(p.X, p.Y, s)
+end;
+
+
+procedure TSteelFrame.TextOutAtP(APt: Point2D; Caption: string; dy: integer);   // centred text-out
+var Sz: TSize;
+  P: TPoint;
+begin
+  Sz := FCanvas.TextExtent(Caption);
+  p := Client2Screen(APt);
+  FCanvas.TextOut(p.X - sz.cx div 2, p.Y + dy - sz.cy div 2 , Caption); // centre text on operation
+end;
+
+procedure TSteelFrame.Circle(APt: Point2D; ARadius: integer; AColor: TColor);
+// Display circle from real-world coordinates and canvas radius
+var
+  p: TPoint;
+begin
+  FCanvas.Pen.color := AColor;
+  p := Client2Screen(APt);
+  FCanvas.Ellipse(p.X - ARadius, p.Y - ARadius, p.X + ARadius, p.Y + ARadius);
+end;
+
+procedure TSteelFrame.Square(APt: Point2D; ARadius: integer; AColor: TColor);
+var
+  p: TPoint;
+begin
+  FCanvas.Pen.Color := AColor;
+  p := Client2Screen(APt);
+  FCanvas.Rectangle(p.X - ARadius, p.Y - ARadius, p.X + ARadius, p.Y + ARadius);
+end;
+
+procedure TSteelFrame.SquareUnder(APt: Point2D; ARadius: integer; AColor: TColor);
+var
+  p: TPoint;
+begin
+  FCanvas.Pen.Color := AColor;
+  p := Client2Screen(APt);
+  FCanvas.Rectangle(p.X - ARadius, p.Y , p.X + ARadius, p.Y + ARadius*2);
+end;
+
+
+procedure TSteelFrame.DrawItem(p: pEntityRecType);
+var
+  linewidth : Integer;
+  baseWidth : Integer;
+begin
+  if p^.isBoxDbl then
+  begin
+    linewidth := 3;
+    baseWidth := 3;
+  end
+  else
+  begin
+    linewidth := 1;
+    baseWidth := 2;
+  end;
+  FCanvas.Pen.Width := baseWidth;
+  FCanvas.Pen.color := FOnGetColour(Self, p);
+  with p^ do
+  begin
+    LineOut(Pt[1], Pt[2]);
+    FCanvas.Pen.Width := linewidth;
+    LineOut(Pt[2], Pt[3]);
+    LineOut(Pt[3], Pt[4]);
+    LineOut(Pt[4], Pt[1]);
+  end;
+end;
+
+procedure TSteelFrame.DrawOperations(pEnt: pEntityRecType);
+var
+  Operation        : OpType;
+  Caption          : String;
+  s                : String;
+  i                : Integer;
+  BearingRad       : Integer;
+  Radius           : Integer;
+  W                : Integer;
+  ServiceRad2      : Integer;
+  Color            : TColor;
+  p                : TPoint;
+  bShowConnections : Boolean;
+begin
+  FCanvas.pen.width:=2;
+  Radius := round( FScale * pEnt^.Web / 2 ) ;
+  BearingRad := Radius;
+  {$IFDEF TRUSS}
+    bShowConnections := G_Settings.tstructure_specialcons;
+  {$ELSE}
+    bShowConnections := True;
+  {$ENDIF}
+  ServiceRad2:=FCanvas.TextWidth('X'); // service circle size - fixed
+  for i := 1 to pEnt^.OpCount do
+  begin
+    Operation := pEnt^.Op[i];
+    Caption := '';
+    case Operation.Kind of
+      okServ1:                // plumbing - 1/2 size
+        if G_Settings.Pstructure_showservice then
+          Circle(Operation.p, ServiceRad2  div 2, clblue);
+      okServ2:
+        if G_Settings.Pstructure_showservice then
+          Circle(Operation.p, ServiceRad2, clRed);
+      okIns:
+        if bShowConnections then
+          Circle(Operation.p, ServiceRad2, clRed);
+      okCon1:                 // connectors
+        if bShowConnections then
+        begin
+          FCanvas.Brush.Color :=clWebFirebrick;
+          Circle(Operation.p, Radius, clRed);
+          FCanvas.Brush.Color := clWhite;
+        end;
+      okScr, okScb:           // connectors (# screws / teks)
+        if G_Settings.tstructure_screws then
+        begin
+          Caption := inttostr(Operation.num) + ifthen(Operation.Kind = okScb, 'B', '');
+          SetFont(clRED,[fsBold]);
+          TextOutAtP(Operation.p, Caption, -20); // centred text-out above connection
+          SetFont;
+        end;
+      okBrA, okBrB, okBrC:    // bearings - possibly unnecessary
+        if bShowConnections then
+        begin
+          Color:=clBlack;
+          case Operation.Kind of
+            okBrA: Color := clgreen;
+            okBrB: Color := clblue;
+            okBrC: Color := clRed;
+          end;
+          SquareUnder(Operation.p, BearingRad, Color);
+        end;
+      okBrace:
+        if bShowConnections then
+          Square(Operation.p, Radius, clBlack);
+      okPC:
+        if bShowConnections then
+        begin
+          Caption := format('PC %4.2f', [Operation.num / 1000]);
+          W := FCanvas.TextWidth(Caption);
+          p := Client2Screen(Operation.p);
+          FCanvas.TextOut(p.X - W div 2, p.Y - 6, Caption); // centre text on operation
+        end;
+      ok4Rivet, ok2Rivet2Tek, ok2Rivet4Tek:   // not ok2Rivet, it's standard
+        if bShowConnections then
+        begin
+          s := '4R';
+          case Operation.Kind of
+            ok2Rivet2Tek: s := '2R+2T';
+            ok2Rivet4Tek: s := '2R+4T';
+          end;
+          W := FCanvas.TextWidth(s);
+          p := Client2Screen(Operation.p);
+          FCanvas.TextOut(p.X - W div 2, p.Y - 6, s); // centre text on operation
+        end;
+    end;
+  end;
+end;
+
+procedure TSteelFrame.DrawSteelFrame(aCanvas : TCanvas);
+begin
+  FCanvasRect  := aCanvas.ClipRect;
+  FCanvas      := ACanvas;
+  InitCanvas;
+  InFlateRect( FCanvasRect, -Margin, -Margin );
+  SetScaleAndOrigin;
+  SetFont;
+  ForEachItem(DrawItem);
+  ForEachItem(DrawOperations);
+end;
 
 end.

@@ -9,7 +9,6 @@ const
   Margin = 40;
 
 type
-  TGetItemColor = Function(AFrame: TSteelFrame; p:pEntityRecType): TColor of object;
 
   TFrameDraw = class(TObject)
   private
